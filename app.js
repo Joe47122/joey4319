@@ -71,10 +71,26 @@
     }
   }
 
-  // Tiny autonomous tailless flying-wing UAV chasing the cursor across the streamlines
+  // 5 cursor-chasing aerospace vehicles: randomized on every page reload (never repeating the same one twice in a row)
+  const CRAFT_TYPES = [
+    { id: 'uav',      label: 'UAV',      span: 9.5,  speed: 4.8, turn: 0.085, dualTrail: true },
+    { id: 'rocket',   label: 'Rocket',   span: 3.2,  speed: 5.4, turn: 0.075, dualTrail: false },
+    { id: 'heli',     label: 'Heli',     span: 7.0,  speed: 4.1, turn: 0.105, dualTrail: false },
+    { id: 'drone',    label: 'Drone',    span: 7.5,  speed: 4.5, turn: 0.12,  dualTrail: true },
+    { id: 'airliner', label: 'Airliner', span: 11.8, speed: 4.3, turn: 0.068, dualTrail: true }
+  ];
+
   let uavEnabled = true;
+  let craftIdx = Math.floor(Math.random() * CRAFT_TYPES.length);
   try {
     uavEnabled = localStorage.getItem('uav_enabled') !== 'false';
+    const lastIdx = parseInt(sessionStorage.getItem('last_craft_idx'), 10);
+    if (!Number.isNaN(lastIdx) && CRAFT_TYPES.length > 1) {
+      // Pick a random index different from the previous reload so every refresh gives a new aircraft
+      const candidates = CRAFT_TYPES.map((_, idx) => idx).filter(idx => idx !== lastIdx);
+      craftIdx = candidates[Math.floor(Math.random() * candidates.length)];
+    }
+    sessionStorage.setItem('last_craft_idx', String(craftIdx));
   } catch (_) {}
 
   const drone = {
@@ -88,19 +104,29 @@
     initialized: false
   };
 
-  // Inject compact liquid-glass UAV ON/OFF cockpit toggle into the top nav bar
+  // Inject compact liquid-glass Aircraft ON/OFF toggle + cycle button into the top nav bar
   const topNav = document.querySelector('nav.top-pill');
   if (topNav) {
     const toggleBtn = document.createElement('button');
     toggleBtn.type = 'button';
     toggleBtn.className = 'liquid-btn sm uav-toggle-btn';
     toggleBtn.setAttribute('aria-pressed', String(uavEnabled));
-    toggleBtn.title = 'Turn the cursor-chasing flying-wing UAV on or off';
+    toggleBtn.title = 'Turn the cursor-chasing aircraft on or off';
+
+    const cycleBtn = document.createElement('button');
+    cycleBtn.type = 'button';
+    cycleBtn.className = 'liquid-btn sm uav-toggle-btn';
+    cycleBtn.style.padding = '7px 10px';
+    cycleBtn.title = 'Switch aircraft (UAV · Rocket · Helicopter · Quad Drone · Commercial Airliner)';
+    cycleBtn.innerHTML = '<span>↻</span>';
+
     const renderToggleLabel = () => {
+      const currentCraft = CRAFT_TYPES[craftIdx];
       toggleBtn.setAttribute('aria-pressed', String(uavEnabled));
-      toggleBtn.innerHTML = `<span class="uav-led"></span><span>UAV: ${uavEnabled ? 'ON' : 'OFF'}</span>`;
+      toggleBtn.innerHTML = `<span class="uav-led"></span><span>${currentCraft.label}: ${uavEnabled ? 'ON' : 'OFF'}</span>`;
     };
     renderToggleLabel();
+
     toggleBtn.addEventListener('click', () => {
       uavEnabled = !uavEnabled;
       try {
@@ -115,17 +141,264 @@
       renderToggleLabel();
     });
 
+    cycleBtn.addEventListener('click', () => {
+      craftIdx = (craftIdx + 1) % CRAFT_TYPES.length;
+      uavEnabled = true;
+      drone.trail = [];
+      try {
+        localStorage.setItem('uav_enabled', 'true');
+        sessionStorage.setItem('last_craft_idx', String(craftIdx));
+      } catch (_) {}
+      renderToggleLabel();
+    });
+
     const ctaBtn = topNav.querySelector('.liquid-btn.primary');
+    const rightGroup = document.createElement('div');
+    rightGroup.style.display = 'flex';
+    rightGroup.style.alignItems = 'center';
+    rightGroup.style.gap = '6px';
     if (ctaBtn) {
-      const rightGroup = document.createElement('div');
-      rightGroup.style.display = 'flex';
-      rightGroup.style.alignItems = 'center';
-      rightGroup.style.gap = '8px';
       topNav.insertBefore(rightGroup, ctaBtn);
       rightGroup.appendChild(toggleBtn);
+      rightGroup.appendChild(cycleBtn);
       rightGroup.appendChild(ctaBtn);
     } else {
-      topNav.appendChild(toggleBtn);
+      rightGroup.appendChild(toggleBtn);
+      rightGroup.appendChild(cycleBtn);
+      topNav.appendChild(rightGroup);
+    }
+  }
+
+  function drawAircraft(ctx, craftId, t, bank) {
+    if (craftId === 'uav') {
+      // 1. Tailless Swept Flying-Wing UAV
+      ctx.scale(1, 1 - Math.abs(bank) * 0.28);
+      const glowGrad = ctx.createRadialGradient(-4, 0, 0.5, -4, 0, 11);
+      glowGrad.addColorStop(0, 'rgba(104, 182, 148, 0.55)');
+      glowGrad.addColorStop(1, 'rgba(104, 182, 148, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(-4, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(9.5, 0);
+      ctx.lineTo(-5.5, -10.2);
+      ctx.lineTo(-8.2, -7.8);
+      ctx.lineTo(-3.8, -2.1);
+      ctx.lineTo(-6.2, 0);
+      ctx.lineTo(-3.8, 2.1);
+      ctx.lineTo(-8.2, 7.8);
+      ctx.lineTo(-5.5, 10.2);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(15, 24, 34, 0.88)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.78)';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(5.2, 0);
+      ctx.lineTo(-2.5, 0);
+      ctx.strokeStyle = 'rgba(238, 242, 248, 0.65)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+    } else if (craftId === 'rocket') {
+      // 2. Orbital / Sounding Rocket with flickering thruster plume
+      const flameLen = 8.5 + Math.sin(t * 0.7) * 2.8;
+      ctx.beginPath();
+      ctx.moveTo(-7.5, -2.1);
+      ctx.lineTo(-7.5 - flameLen, 0);
+      ctx.lineTo(-7.5, 2.1);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(104, 182, 148, 0.75)';
+      ctx.fill();
+
+      // Rear fins
+      ctx.beginPath();
+      ctx.moveTo(-3.5, -2.6);
+      ctx.lineTo(-8.2, -6.5);
+      ctx.lineTo(-7.5, -2.4);
+      ctx.moveTo(-3.5, 2.6);
+      ctx.lineTo(-8.2, 6.5);
+      ctx.lineTo(-7.5, 2.4);
+      ctx.fillStyle = 'rgba(15, 24, 34, 0.9)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.75)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Rocket cylindrical body + ogive nose cone
+      ctx.beginPath();
+      ctx.moveTo(11.5, 0);
+      ctx.quadraticCurveTo(6.5, -3.1, 2.0, -3.1);
+      ctx.lineTo(-7.5, -2.8);
+      ctx.lineTo(-7.5, 2.8);
+      ctx.lineTo(2.0, 3.1);
+      ctx.quadraticCurveTo(6.5, 3.1, 11.5, 0);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(18, 28, 40, 0.92)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(238, 242, 248, 0.8)';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+      // Stage interstage band
+      ctx.beginPath();
+      ctx.moveTo(1.5, -3.0);
+      ctx.lineTo(1.5, 3.0);
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.8)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+    } else if (craftId === 'heli') {
+      // 3. Helicopter (Hughes 369H / Bell UH-1 tribute with spinning main rotor)
+      // Tailboom & tail stabilizer
+      ctx.beginPath();
+      ctx.moveTo(-2, 0);
+      ctx.lineTo(-11.5, 0);
+      ctx.moveTo(-10.2, -3.2);
+      ctx.lineTo(-11.5, 3.2);
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.8)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      // Landing skids hint
+      ctx.beginPath();
+      ctx.moveTo(4.5, -4.4);
+      ctx.lineTo(-3.2, -4.4);
+      ctx.moveTo(4.5, 4.4);
+      ctx.lineTo(-3.2, 4.4);
+      ctx.strokeStyle = 'rgba(160, 182, 210, 0.55)';
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+
+      // Teardrop fuselage cabin
+      ctx.beginPath();
+      ctx.ellipse(2.2, 0, 6.2, 3.6, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(15, 24, 34, 0.92)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.82)';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+      // Spinning main rotor disc + 4 blades
+      ctx.beginPath();
+      ctx.arc(1.2, 0, 10.5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.24)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      const rAng = t * 0.38;
+      ctx.save();
+      ctx.translate(1.2, 0);
+      ctx.rotate(rAng);
+      ctx.beginPath();
+      ctx.moveTo(-10.2, 0);
+      ctx.lineTo(10.2, 0);
+      ctx.moveTo(0, -10.2);
+      ctx.lineTo(0, 10.2);
+      ctx.strokeStyle = 'rgba(238, 242, 248, 0.72)';
+      ctx.lineWidth = 1.15;
+      ctx.stroke();
+      ctx.restore();
+
+    } else if (craftId === 'drone') {
+      // 4. Small Quadcopter Drone with 4 spinning micro-rotors
+      const arms = [
+        [5.8, -5.8],
+        [5.8, 5.8],
+        [-5.8, -5.8],
+        [-5.8, 5.8]
+      ];
+      ctx.beginPath();
+      arms.forEach(([ax, ay]) => {
+        ctx.moveTo(0, 0);
+        ctx.lineTo(ax, ay);
+      });
+      ctx.strokeStyle = 'rgba(160, 182, 210, 0.75)';
+      ctx.lineWidth = 1.3;
+      ctx.stroke();
+
+      // 4 spinning rotor discs
+      arms.forEach(([ax, ay], idx) => {
+        ctx.beginPath();
+        ctx.arc(ax, ay, 3.6, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(104, 182, 148, 0.14)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(104, 182, 148, 0.65)';
+        ctx.lineWidth = 0.85;
+        ctx.stroke();
+
+        const bAng = t * 0.55 * (idx % 2 === 0 ? 1 : -1);
+        ctx.beginPath();
+        ctx.moveTo(ax - Math.cos(bAng) * 3.1, ay - Math.sin(bAng) * 3.1);
+        ctx.lineTo(ax + Math.cos(bAng) * 3.1, ay + Math.sin(bAng) * 3.1);
+        ctx.strokeStyle = 'rgba(238, 242, 248, 0.75)';
+        ctx.lineWidth = 0.9;
+        ctx.stroke();
+      });
+
+      // Central avionics pod
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(-3.4, -2.4, 6.8, 4.8, 2) : ctx.rect(-3.4, -2.4, 6.8, 4.8);
+      ctx.fillStyle = 'rgba(15, 24, 34, 0.95)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.85)';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+    } else {
+      // 5. Commercial Aircraft (ATR 72-600 / Twin-Engine Airliner planform)
+      ctx.scale(1, 1 - Math.abs(bank) * 0.25);
+
+      // Main wings + horizontal tailplane
+      ctx.beginPath();
+      // Main wing
+      ctx.moveTo(3.2, 0);
+      ctx.lineTo(-1.2, -12.2);
+      ctx.lineTo(-3.4, -12.0);
+      ctx.lineTo(-1.8, 0);
+      ctx.lineTo(-3.4, 12.0);
+      ctx.lineTo(-1.2, 12.2);
+      ctx.closePath();
+      // Tailplane
+      ctx.moveTo(-7.2, 0);
+      ctx.lineTo(-9.8, -4.6);
+      ctx.lineTo(-11.0, -4.4);
+      ctx.lineTo(-9.6, 0);
+      ctx.lineTo(-11.0, 4.4);
+      ctx.lineTo(-9.8, 4.6);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(15, 24, 34, 0.9)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.78)';
+      ctx.lineWidth = 1.05;
+      ctx.stroke();
+
+      // Twin wing-mounted engine nacelles
+      ctx.beginPath();
+      ctx.rect(-0.2, -6.2, 4.2, 1.6);
+      ctx.rect(-0.2, 4.6, 4.2, 1.6);
+      ctx.fillStyle = 'rgba(104, 182, 148, 0.5)';
+      ctx.fill();
+
+      // Fuselage tube
+      ctx.beginPath();
+      ctx.moveTo(11.5, 0);
+      ctx.quadraticCurveTo(8.5, -2.0, 4.5, -2.0);
+      ctx.lineTo(-7.5, -1.7);
+      ctx.lineTo(-11.2, 0);
+      ctx.lineTo(-7.5, 1.7);
+      ctx.lineTo(4.5, 2.0);
+      ctx.quadraticCurveTo(8.5, 2.0, 11.5, 0);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(20, 30, 44, 0.96)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(238, 242, 248, 0.85)';
+      ctx.lineWidth = 1.05;
+      ctx.stroke();
     }
   }
 
@@ -137,9 +410,9 @@
     pointer.vx *= 0.88;
     pointer.vy *= 0.88;
     const influenceRadius = 155;
+    const currentCraft = CRAFT_TYPES[craftIdx];
 
     if (uavEnabled) {
-      // Update autonomous UAV chasing the cursor (or patrolling in a smooth figure-8 if cursor is idle/off-screen)
       const hasPointer = pointer.x > -1000 && pointer.y > -1000;
       const targetX = hasPointer ? pointer.x : (W * 0.5 + Math.cos(t * 0.012) * (W * 0.28));
       const targetY = hasPointer ? pointer.y : (H * 0.42 + Math.sin(t * 0.024) * (H * 0.16));
@@ -150,28 +423,27 @@
 
       let desiredAngle = Math.atan2(toDy, toDx);
       if (toDist < 48) {
-        desiredAngle += 1.15; // banking orbit around stationary pointer
+        desiredAngle += 1.15;
       }
 
       let angleDiff = desiredAngle - drone.angle;
       while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
       while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
 
-      drone.angle += angleDiff * 0.085;
+      drone.angle += angleDiff * currentCraft.turn;
       drone.bank = drone.bank * 0.85 + Math.max(-0.55, Math.min(0.55, angleDiff * 1.4)) * 0.15;
 
-      const cruiseSpeed = Math.min(4.8, Math.max(1.85, toDist * 0.032));
+      const cruiseSpeed = Math.min(currentCraft.speed, Math.max(1.85, toDist * 0.032));
       drone.vx = Math.cos(drone.angle) * cruiseSpeed;
       drone.vy = Math.sin(drone.angle) * cruiseSpeed;
       drone.x += drone.vx;
       drone.y += drone.vy;
 
-      // Record wingtip contrail ribbon
-      const wingSpan = 9.5 * (1 - Math.abs(drone.bank) * 0.28);
+      const wingSpan = currentCraft.span * (1 - Math.abs(drone.bank) * 0.25);
       const perpX = -Math.sin(drone.angle);
       const perpY = Math.cos(drone.angle);
-      const tailX = drone.x - Math.cos(drone.angle) * 5;
-      const tailY = drone.y - Math.sin(drone.angle) * 5;
+      const tailX = drone.x - Math.cos(drone.angle) * 6;
+      const tailY = drone.y - Math.sin(drone.angle) * 6;
 
       drone.trail.push({
         x: tailX,
@@ -194,7 +466,6 @@
         const wave = Math.sin(j * 0.22 + t * line.speed + line.phase) * 4.5;
         const targetY = n.baseY + wave;
 
-        // 1) Cursor pushes streamlines
         const dx = n.x - pointer.x;
         const dy = n.y - pointer.y;
         const dist = Math.hypot(dx, dy);
@@ -206,7 +477,6 @@
           n.glow = Math.min(1, n.glow + falloff * 0.35);
         }
 
-        // 2) Tiny UAV wake also ripples the streamlines as it crosses them (only when enabled)
         if (uavEnabled) {
           const uDx = n.x - drone.x;
           const uDy = n.y - drone.y;
@@ -245,60 +515,31 @@
     }
 
     if (uavEnabled) {
-      // Draw subtle dual wingtip vortex trails behind the chasing UAV
       if (drone.trail.length > 2) {
         for (let k = 1; k < drone.trail.length; k++) {
           const p0 = drone.trail[k - 1];
           const p1 = drone.trail[k];
           const frac = k / drone.trail.length;
-          ctx.strokeStyle = `rgba(104, 182, 148, ${(frac * 0.22).toFixed(3)})`;
-          ctx.lineWidth = 0.85;
+          ctx.strokeStyle = `rgba(104, 182, 148, ${(frac * 0.24).toFixed(3)})`;
+          ctx.lineWidth = currentCraft.dualTrail ? 0.85 : 1.35;
           ctx.beginPath();
-          ctx.moveTo(p0.lx, p0.ly);
-          ctx.lineTo(p1.lx, p1.ly);
-          ctx.moveTo(p0.rx, p0.ry);
-          ctx.lineTo(p1.rx, p1.ry);
+          if (currentCraft.dualTrail) {
+            ctx.moveTo(p0.lx, p0.ly);
+            ctx.lineTo(p1.lx, p1.ly);
+            ctx.moveTo(p0.rx, p0.ry);
+            ctx.lineTo(p1.rx, p1.ry);
+          } else {
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+          }
           ctx.stroke();
         }
       }
 
-      // Draw the tiny tailless swept flying-wing UAV chasing the pointer
       ctx.save();
       ctx.translate(drone.x, drone.y);
       ctx.rotate(drone.angle);
-      ctx.scale(1, 1 - Math.abs(drone.bank) * 0.28);
-
-      const glowGrad = ctx.createRadialGradient(-4, 0, 0.5, -4, 0, 11);
-      glowGrad.addColorStop(0, 'rgba(104, 182, 148, 0.55)');
-      glowGrad.addColorStop(1, 'rgba(104, 182, 148, 0)');
-      ctx.fillStyle = glowGrad;
-      ctx.beginPath();
-      ctx.arc(-4, 0, 11, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(9.5, 0);
-      ctx.lineTo(-5.5, -10.2);
-      ctx.lineTo(-8.2, -7.8);
-      ctx.lineTo(-3.8, -2.1);
-      ctx.lineTo(-6.2, 0);
-      ctx.lineTo(-3.8, 2.1);
-      ctx.lineTo(-8.2, 7.8);
-      ctx.lineTo(-5.5, 10.2);
-      ctx.closePath();
-
-      ctx.fillStyle = 'rgba(15, 24, 34, 0.85)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.72)';
-      ctx.lineWidth = 1.1;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(5.2, 0);
-      ctx.lineTo(-2.5, 0);
-      ctx.strokeStyle = 'rgba(238, 242, 248, 0.65)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+      drawAircraft(ctx, currentCraft.id, t, drone.bank);
       ctx.restore();
     }
 
