@@ -210,6 +210,31 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
   box-shadow: 0 0 8px var(--accent);
 }
 
+/* Tactile visual glass-tap shockwave ring at click coordinates */
+.glass-tap-ripple {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  margin-top: -7px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  border: 1.5px solid rgba(104, 182, 148, 0.85);
+  box-shadow: 0 0 14px rgba(104, 182, 148, 0.55), inset 0 0 8px rgba(255, 255, 255, 0.65);
+  animation: glassTapWave 0.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes glassTapWave {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(4.2);
+    opacity: 0;
+  }
+}
+
 /* ============================================================
    FLOATING LIQUID-GLASS NAVIGATION PILL
    ============================================================ */
@@ -341,68 +366,79 @@ nav.top-pill {
   box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.75);
 }
 
-/* 3D Curved Arc of Project Screens Floating Behind the Portrait */
+/* 3D Curved Rolling Panorama of Project Screens Floating Behind the Portrait */
 .hero-arc-viewport {
   position: absolute;
-  left: -6%;
-  right: -6%;
-  top: 72px;
-  height: 225px;
-  perspective: 1150px;
-  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 58px;
+  height: 245px;
+  perspective: 1100px;
+  z-index: 2;
   pointer-events: auto;
 }
 .hero-arc-track {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
+  position: relative;
+  width: 100%;
   height: 100%;
   transform-style: preserve-3d;
 }
 .arc-card {
-  position: relative;
-  width: 225px;
-  height: 145px;
-  flex-shrink: 0;
-  border-radius: 14px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 235px;
+  height: 150px;
+  margin-left: -117.5px;
+  margin-top: -75px;
+  border-radius: 15px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   background: #0b1018;
-  box-shadow: 0 16px 38px -10px rgba(0, 0, 0, 0.8);
-  transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1),
-              border-color 0.35s ease,
-              box-shadow 0.35s ease,
-              filter 0.35s ease;
+  box-shadow: 0 16px 38px -10px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: border-color 0.28s ease, box-shadow 0.28s ease;
 }
 .arc-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+.arc-card:hover img {
+  transform: scale(1.07);
 }
 .arc-card .arc-cap {
   position: absolute;
   inset: auto 0 0 0;
-  padding: 6px 10px;
-  background: linear-gradient(180deg, transparent, rgba(5, 8, 13, 0.9));
+  padding: 8px 11px;
+  background: linear-gradient(180deg, transparent, rgba(5, 8, 13, 0.94));
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: var(--ink);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
 }
-/* 3D Cylindrical Panoramic Curve Angles */
-.arc-card:nth-child(1) { transform: rotateY(32deg) translateZ(-48px) translateY(-6px) scale(0.95); }
-.arc-card:nth-child(2) { transform: rotateY(20deg) translateZ(-95px) translateY(2px) scale(0.92); }
-.arc-card:nth-child(3) { transform: rotateY(9deg)  translateZ(-135px) translateY(8px) scale(0.88); opacity: 0.72; }
-.arc-card:nth-child(4) { transform: rotateY(-9deg) translateZ(-135px) translateY(8px) scale(0.88); opacity: 0.72; }
-.arc-card:nth-child(5) { transform: rotateY(-20deg) translateZ(-95px) translateY(2px) scale(0.92); }
-.arc-card:nth-child(6) { transform: rotateY(-32deg) translateZ(-48px) translateY(-6px) scale(0.95); }
-
+.arc-card .arc-cap::after {
+  content: "Open ↗";
+  color: var(--accent);
+  font-weight: 600;
+  opacity: 0.75;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
 .arc-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 20px 44px -8px rgba(104, 182, 148, 0.4);
-  z-index: 4;
-  opacity: 1 !important;
+  box-shadow: 0 22px 48px -8px rgba(104, 182, 148, 0.5);
+  z-index: 6;
+}
+.arc-card:hover .arc-cap::after {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 /* Foreground Studio Cutout Portrait Rising Over the 3D Arc */
@@ -413,7 +449,7 @@ nav.top-pill {
   transform: translateX(-50%);
   width: clamp(275px, 31vw, 395px);
   height: 495px;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
   display: flex;
   align-items: flex-end;
@@ -431,12 +467,16 @@ nav.top-pill {
 /* Bottom Left Title & CTA + Bottom Right Mission Quote & Signature */
 .hero-foreground-grid {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   display: grid;
   grid-template-columns: 1fr minmax(200px, 310px) 1fr;
   align-items: end;
   gap: 24px;
   width: 100%;
+  pointer-events: none;
+}
+.hero-col-left, .hero-col-right {
+  pointer-events: auto;
 }
 .hero-col-left {
   text-align: left;

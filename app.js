@@ -904,61 +904,172 @@
      4. GLASS-TAP ACOUSTIC SOUND + HAPTICS + VISUAL RIPPLE
      ------------------------------------------------------------ */
   let audioCtx = null;
-  function playGlassTap(isPrimary = false) {
-    // Haptic vibration on mobile / supported hardware
+  let lastTapTime = 0;
+
+  function triggerGlassNotes(ac, isPrimary) {
+    const now = ac.currentTime + 0.004;
+
+    // 1. Physical fingertip-on-glass impact transient ("tock" body)
+    const impactOsc = ac.createOscillator();
+    const impactGain = ac.createGain();
+    impactOsc.type = 'triangle';
+    const impactStart = isPrimary ? 1040 : 920;
+    impactOsc.frequency.setValueAtTime(impactStart, now);
+    impactOsc.frequency.exponentialRampToValueAtTime(260, now + 0.032);
+
+    impactGain.gain.setValueAtTime(0.001, now);
+    impactGain.gain.linearRampToValueAtTime(0.42, now + 0.002);
+    impactGain.gain.exponentialRampToValueAtTime(0.0008, now + 0.035);
+
+    // 2. Primary tempered-glass modal resonance (clear crystal fundamental)
+    const mode1Osc = ac.createOscillator();
+    const mode1Gain = ac.createGain();
+    mode1Osc.type = 'sine';
+    const f1 = isPrimary ? 2120 : 1860;
+    mode1Osc.frequency.setValueAtTime(f1, now);
+    mode1Osc.frequency.exponentialRampToValueAtTime(f1 * 0.92, now + 0.095);
+
+    mode1Gain.gain.setValueAtTime(0.001, now);
+    mode1Gain.gain.linearRampToValueAtTime(0.36, now + 0.0025);
+    mode1Gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.098);
+
+    // 3. Upper crystalline harmonic overtone ("ping" shimmer)
+    const mode2Osc = ac.createOscillator();
+    const mode2Gain = ac.createGain();
+    mode2Osc.type = 'sine';
+    const f2 = isPrimary ? 3680 : 3280;
+    mode2Osc.frequency.setValueAtTime(f2, now);
+    mode2Osc.frequency.exponentialRampToValueAtTime(f2 * 0.88, now + 0.068);
+
+    mode2Gain.gain.setValueAtTime(0.001, now);
+    mode2Gain.gain.linearRampToValueAtTime(0.24, now + 0.002);
+    mode2Gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.072);
+
+    impactOsc.connect(impactGain).connect(ac.destination);
+    mode1Osc.connect(mode1Gain).connect(ac.destination);
+    mode2Osc.connect(mode2Gain).connect(ac.destination);
+
+    impactOsc.start(now);
+    impactOsc.stop(now + 0.038);
+    mode1Osc.start(now);
+    mode1Osc.stop(now + 0.102);
+    mode2Osc.start(now);
+    mode2Osc.stop(now + 0.075);
+  }
+
+  function playGlassTap(isPrimary = false, clientX = null, clientY = null) {
+    const nowMs = performance.now();
+    if (nowMs - lastTapTime < 45) return; // prevent double-fire on pointerdown + click
+    lastTapTime = nowMs;
+
+    // Haptic vibration on supported devices
     if (navigator.vibrate) {
-      navigator.vibrate(isPrimary ? [8, 18, 6] : 6);
+      try { navigator.vibrate(isPrimary ? [10, 20, 8] : 8); } catch (_) {}
+    }
+
+    // Visual glass-tap shockwave ring at click location
+    if (clientX !== null && clientY !== null) {
+      const ripple = document.createElement('span');
+      ripple.className = 'glass-tap-ripple';
+      ripple.style.left = clientX + 'px';
+      ripple.style.top = clientY + 'px';
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 480);
     }
 
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       if (!audioCtx) audioCtx = new AC();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
 
-      const now = audioCtx.currentTime;
-
-      // High crystalline ping (tempered glass resonance)
-      const osc1 = audioCtx.createOscillator();
-      const gain1 = audioCtx.createGain();
-      osc1.type = 'sine';
-      const baseFreq = isPrimary ? 2650 : 2350;
-      osc1.frequency.setValueAtTime(baseFreq, now);
-      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.58, now + 0.042);
-
-      gain1.gain.setValueAtTime(0.0001, now);
-      gain1.gain.linearRampToValueAtTime(0.11, now + 0.002);
-      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
-
-      // Subtle tactile body transient (finger impact on glass)
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(620, now);
-      osc2.frequency.exponentialRampToValueAtTime(190, now + 0.018);
-
-      gain2.gain.setValueAtTime(0.0001, now);
-      gain2.gain.linearRampToValueAtTime(0.09, now + 0.0015);
-      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
-
-      osc1.connect(gain1).connect(audioCtx.destination);
-      osc2.connect(gain2).connect(audioCtx.destination);
-
-      osc1.start(now);
-      osc1.stop(now + 0.048);
-      osc2.start(now);
-      osc2.stop(now + 0.022);
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => {
+          triggerGlassNotes(audioCtx, isPrimary);
+        }).catch(() => {});
+      } else {
+        triggerGlassNotes(audioCtx, isPrimary);
+      }
     } catch (_) {}
   }
 
+  const TAP_SELECTOR = 'a, button, .liquid-btn, .nav-tab, .filter-pill, .exp-tab-btn, .spec-pill-card, .arc-card, .proj-card, .stat-card, .process-card, .glass-chip, .gallery figure, .liquid-glass';
+
   document.addEventListener('pointerdown', e => {
-    const target = e.target.closest('.liquid-btn, .nav-tab, .filter-pill, .exp-tab-btn, .spec-pill-card, .gallery figure');
+    const target = e.target.closest(TAP_SELECTOR);
     if (!target) return;
-    playGlassTap(target.classList.contains('primary'));
+    playGlassTap(target.classList.contains('primary'), e.clientX, e.clientY);
+  });
+
+  document.addEventListener('click', e => {
+    const target = e.target.closest(TAP_SELECTOR);
+    if (!target) return;
+    playGlassTap(target.classList.contains('primary'), e.clientX, e.clientY);
   });
 
   /* ------------------------------------------------------------
-     5. GALLERY IMAGE LIGHTBOX
+     5. DYNAMIC 3D ROLLING HERO PANORAMA (Clickable project cards)
+     ------------------------------------------------------------ */
+  const arcTrack = document.querySelector('.hero-arc-track');
+  const arcCards = arcTrack ? Array.from(arcTrack.querySelectorAll('.arc-card')) : [];
+  if (arcCards.length > 0) {
+    let arcOffset = 0;
+    let arcHoverIdx = -1;
+    let isArcHovered = false;
+
+    arcTrack.addEventListener('mouseenter', () => { isArcHovered = true; });
+    arcTrack.addEventListener('mouseleave', () => { isArcHovered = false; arcHoverIdx = -1; });
+
+    arcCards.forEach((card, idx) => {
+      card.addEventListener('mouseenter', () => { arcHoverIdx = idx; });
+      card.addEventListener('mouseleave', () => { if (arcHoverIdx === idx) arcHoverIdx = -1; });
+    });
+
+    function animatePanorama() {
+      // Smoothly roll the 3D project cards behind the portrait; slow down on hover for easy clicking
+      const speed = isArcHovered ? 0.00035 : 0.0018;
+      arcOffset = (arcOffset + speed) % 1;
+
+      const N = arcCards.length;
+      const trackW = arcTrack.clientWidth || 1050;
+      const spreadX = Math.min(620, trackW * 0.56);
+
+      for (let i = 0; i < N; i++) {
+        const card = arcCards[i];
+        // Normalized position u in [-0.5, 0.5) wrapping continuously right-to-left
+        let u = ((i / N) - arcOffset) % 1;
+        if (u < -0.5) u += 1;
+        if (u >= 0.5) u -= 1;
+
+        // Angle along the concave panoramic screen (-1.22 rad to +1.22 rad)
+        const theta = u * 2.44;
+        const x = Math.sin(theta) * spreadX;
+        // Concave cylindrical depth: middle recedes behind portrait shoulders (-140px), edges curve forward (-15px)
+        const baseZ = -Math.cos(theta) * 140 + 15;
+        const hoverBoostZ = (i === arcHoverIdx) ? 38 : 0;
+        const hoverScale = (i === arcHoverIdx) ? 1.06 : 0.94;
+        const z = baseZ + hoverBoostZ;
+        const rotY = -theta * 30; // tilt inward toward viewer like a wraparound cockpit screen
+        const y = Math.cos(theta) * 14 - 8;
+
+        // Smooth fade at wrap-around seam (|u| near 0.5)
+        const edgeDist = 0.5 - Math.abs(u);
+        const alpha = Math.max(0, Math.min(1, edgeDist * 5.2));
+
+        card.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(1)}deg) scale(${hoverScale})`;
+        card.style.opacity = (i === arcHoverIdx) ? '1' : (alpha * 0.92).toFixed(2);
+        card.style.pointerEvents = alpha > 0.25 ? 'auto' : 'none';
+      }
+
+      requestAnimationFrame(animatePanorama);
+    }
+
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animatePanorama();
+    }
+  }
+
+  /* ------------------------------------------------------------
+     6. GALLERY IMAGE LIGHTBOX
      ------------------------------------------------------------ */
   const figures = document.querySelectorAll('.gallery figure');
   if (figures.length > 0) {
