@@ -23,61 +23,37 @@
   const NUM_NODES = 34;
   let lines = [];
 
-  // 1990s VHF Mission-Control Radio Callout ("*BEEP* Stage one catch confirmed. We have touchdown. *BEEP*")
+  // Authentic 1969 NASA Apollo 11 Human Mission Control Recording ("Houston, Tranquility Base here. The Eagle has landed.")
+  // Plays strictly ONCE when the SpaceX rocket lands in the interface.
   let radioHtmlAudio = null;
-  let lastRadioCalloutMs = 0;
+  let rocketLandingAudioPlayed = false;
   try {
-    radioHtmlAudio = new Audio('assets/touchdown-radio.wav');
+    rocketLandingAudioPlayed = sessionStorage.getItem('rocket_landing_audio_played') === 'true';
+    radioHtmlAudio = new Audio('assets/touchdown-radio.mp3');
     radioHtmlAudio.preload = 'auto';
-    radioHtmlAudio.volume = 0.42;
+    radioHtmlAudio.volume = 0.55;
   } catch (_) {}
 
   function playTouchdownRadioCallout() {
-    const nowMs = performance.now();
-    if (nowMs - lastRadioCalloutMs < 10000) return; // avoid repeating constantly on tiny mouse nudges
-    lastRadioCalloutMs = nowMs;
+    if (rocketLandingAudioPlayed) return; // strictly once per session in the whole interface
+    rocketLandingAudioPlayed = true;
+    try {
+      sessionStorage.setItem('rocket_landing_audio_played', 'true');
+    } catch (_) {}
 
-    // 1. Try playing the 1990s VHF radio WAV file (with NASA Quindar tones & radio bandpass filter)
     if (radioHtmlAudio) {
       try {
         radioHtmlAudio.currentTime = 0;
         const p = radioHtmlAudio.play();
         if (p && p.catch) {
-          p.catch(() => playFallbackQuindarSpeech());
+          p.catch(() => {
+            // If browser blocked autoplay before first click, allow one retry on next landing after click
+            rocketLandingAudioPlayed = false;
+            try { sessionStorage.removeItem('rocket_landing_audio_played'); } catch (_) {}
+          });
         }
-        return;
       } catch (_) {}
     }
-    playFallbackQuindarSpeech();
-  }
-
-  function playFallbackQuindarSpeech() {
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) {
-        if (!audioCtx) audioCtx = new AC();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
-        // Intro NASA Quindar beep (2525 Hz)
-        const q1 = audioCtx.createOscillator();
-        const qg1 = audioCtx.createGain();
-        q1.type = 'sine';
-        q1.frequency.setValueAtTime(2525, now);
-        qg1.gain.setValueAtTime(0.18, now);
-        qg1.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-        q1.connect(qg1).connect(audioCtx.destination);
-        q1.start(now);
-        q1.stop(now + 0.135);
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance('Stage one catch confirmed. We have touchdown.');
-        u.rate = 0.96;
-        u.pitch = 0.92;
-        u.volume = 0.9;
-        window.speechSynthesis.speak(u);
-      }
-    } catch (_) {}
   }
 
   const pointer = { x: -9999, y: -9999, vx: 0, vy: 0, lastX: -9999, lastY: -9999, lastMoveTime: 0 };
@@ -964,80 +940,47 @@
   });
 
   /* ------------------------------------------------------------
-     4. GLASS-TAP ACOUSTIC SOUND + HAPTICS + VISUAL RIPPLE
+     4. SINGLE SUBTLE GLASS-TAP ACOUSTIC CLICK + HAPTICS
      ------------------------------------------------------------ */
   let audioCtx = null;
   let lastTapTime = 0;
 
-  function triggerGlassNotes(ac, isPrimary) {
-    const now = ac.currentTime + 0.004;
+  function triggerSingleSubtleTap(ac, isPrimary) {
+    const now = ac.currentTime + 0.002;
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
 
-    // 1. Physical fingertip-on-glass impact transient ("tock" body)
-    const impactOsc = ac.createOscillator();
-    const impactGain = ac.createGain();
-    impactOsc.type = 'triangle';
-    const impactStart = isPrimary ? 1040 : 920;
-    impactOsc.frequency.setValueAtTime(impactStart, now);
-    impactOsc.frequency.exponentialRampToValueAtTime(260, now + 0.032);
+    // Single soft, brief tempered-glass micro-tap (22ms duration, subtle volume, zero echo)
+    osc.type = 'sine';
+    const startFreq = isPrimary ? 1920 : 1720;
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(1080, now + 0.022);
 
-    impactGain.gain.setValueAtTime(0.001, now);
-    impactGain.gain.linearRampToValueAtTime(0.42, now + 0.002);
-    impactGain.gain.exponentialRampToValueAtTime(0.0008, now + 0.035);
+    gain.gain.setValueAtTime(0.0005, now);
+    gain.gain.linearRampToValueAtTime(0.052, now + 0.0018);
+    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.023);
 
-    // 2. Primary tempered-glass modal resonance (clear crystal fundamental)
-    const mode1Osc = ac.createOscillator();
-    const mode1Gain = ac.createGain();
-    mode1Osc.type = 'sine';
-    const f1 = isPrimary ? 2120 : 1860;
-    mode1Osc.frequency.setValueAtTime(f1, now);
-    mode1Osc.frequency.exponentialRampToValueAtTime(f1 * 0.92, now + 0.095);
-
-    mode1Gain.gain.setValueAtTime(0.001, now);
-    mode1Gain.gain.linearRampToValueAtTime(0.36, now + 0.0025);
-    mode1Gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.098);
-
-    // 3. Upper crystalline harmonic overtone ("ping" shimmer)
-    const mode2Osc = ac.createOscillator();
-    const mode2Gain = ac.createGain();
-    mode2Osc.type = 'sine';
-    const f2 = isPrimary ? 3680 : 3280;
-    mode2Osc.frequency.setValueAtTime(f2, now);
-    mode2Osc.frequency.exponentialRampToValueAtTime(f2 * 0.88, now + 0.068);
-
-    mode2Gain.gain.setValueAtTime(0.001, now);
-    mode2Gain.gain.linearRampToValueAtTime(0.24, now + 0.002);
-    mode2Gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.072);
-
-    impactOsc.connect(impactGain).connect(ac.destination);
-    mode1Osc.connect(mode1Gain).connect(ac.destination);
-    mode2Osc.connect(mode2Gain).connect(ac.destination);
-
-    impactOsc.start(now);
-    impactOsc.stop(now + 0.038);
-    mode1Osc.start(now);
-    mode1Osc.stop(now + 0.102);
-    mode2Osc.start(now);
-    mode2Osc.stop(now + 0.075);
+    osc.connect(gain).connect(ac.destination);
+    osc.start(now);
+    osc.stop(now + 0.025);
   }
 
   function playGlassTap(isPrimary = false, clientX = null, clientY = null) {
     const nowMs = performance.now();
-    if (nowMs - lastTapTime < 45) return; // prevent double-fire on pointerdown + click
+    if (nowMs - lastTapTime < 350) return; // strict single-tap guard: never double-tap
     lastTapTime = nowMs;
 
-    // Haptic vibration on supported devices
     if (navigator.vibrate) {
-      try { navigator.vibrate(isPrimary ? [10, 20, 8] : 8); } catch (_) {}
+      try { navigator.vibrate(5); } catch (_) {}
     }
 
-    // Visual glass-tap shockwave ring at click location
     if (clientX !== null && clientY !== null) {
       const ripple = document.createElement('span');
       ripple.className = 'glass-tap-ripple';
       ripple.style.left = clientX + 'px';
       ripple.style.top = clientY + 'px';
       document.body.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 480);
+      setTimeout(() => ripple.remove(), 440);
     }
 
     try {
@@ -1047,30 +990,25 @@
 
       if (audioCtx.state === 'suspended') {
         audioCtx.resume().then(() => {
-          triggerGlassNotes(audioCtx, isPrimary);
+          triggerSingleSubtleTap(audioCtx, isPrimary);
         }).catch(() => {});
       } else {
-        triggerGlassNotes(audioCtx, isPrimary);
+        triggerSingleSubtleTap(audioCtx, isPrimary);
       }
     } catch (_) {}
   }
 
-  const TAP_SELECTOR = 'a, button, .liquid-btn, .nav-tab, .filter-pill, .exp-tab-btn, .spec-pill-card, .arc-card, .proj-card, .stat-card, .process-card, .glass-chip, .gallery figure, .liquid-glass';
+  const TAP_SELECTOR = 'a, button, .liquid-btn, .nav-tab, .filter-pill, .exp-tab-btn, .spec-pill-card, .arc-card, .gallery figure';
 
+  // Bind ONLY to pointerdown so a click can never fire two taps (on press + release)
   document.addEventListener('pointerdown', e => {
     const target = e.target.closest(TAP_SELECTOR);
     if (!target) return;
     playGlassTap(target.classList.contains('primary'), e.clientX, e.clientY);
   });
 
-  document.addEventListener('click', e => {
-    const target = e.target.closest(TAP_SELECTOR);
-    if (!target) return;
-    playGlassTap(target.classList.contains('primary'), e.clientX, e.clientY);
-  });
-
   /* ------------------------------------------------------------
-     5. DYNAMIC 3D ROLLING HERO PANORAMA (Clickable project cards)
+     5. DYNAMIC 3D ROLLING HERO PANORAMA (Ultra-slow time-based drift)
      ------------------------------------------------------------ */
   const arcTrack = document.querySelector('.hero-arc-track');
   const arcCards = arcTrack ? Array.from(arcTrack.querySelectorAll('.arc-card')) : [];
@@ -1078,6 +1016,7 @@
     let arcOffset = 0;
     let arcHoverIdx = -1;
     let isArcHovered = false;
+    let lastArcTime = performance.now();
 
     arcTrack.addEventListener('mouseenter', () => { isArcHovered = true; });
     arcTrack.addEventListener('mouseleave', () => { isArcHovered = false; arcHoverIdx = -1; });
@@ -1088,7 +1027,7 @@
     });
 
     function animatePanorama() {
-      // Ultra-slow, calm architectural glide behind the portrait; pauses completely on hover
+      // Exact approved calm panorama speed; pauses completely on hover
       const speed = isArcHovered ? 0 : 0.00026;
       arcOffset = (arcOffset + speed) % 1;
 
@@ -1127,7 +1066,7 @@
     }
 
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      animatePanorama();
+      requestAnimationFrame(animatePanorama);
     }
   }
 

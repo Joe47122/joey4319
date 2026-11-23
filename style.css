@@ -5,17 +5,20 @@
    ============================================================ */
 
 :root {
-  --bg: #080b10;
-  --bg-elev: #0d121a;
-  --ink: #eef2f8;
-  --muted: #8f9bb0;
-  --faint: #566276;
+  --bg: #07090f;
+  --bg-elev: #0c101a;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --faint: #57657a;
 
-  /* Refined, muted seafoam-sage & aero-teal palette */
-  --accent: #68b694;
-  --accent-soft: rgba(104, 182, 148, 0.22);
-  --accent-cyan: #5d9cb3;
-  --accent-dark: #07130e;
+  /* Elevated Stratosphere Ice-Blue & Brushed Titanium palette */
+  --accent: #60a5fa;
+  --accent-soft: rgba(96, 165, 250, 0.22);
+  --accent-cyan: #38bdf8;
+  --accent-dark: #06101f;
+
+  /* Preserved active-status green for name dot, status dot, and SpaceX/UAV LED */
+  --status-green: #34d399;
 
   /* Preserved original fonts */
   --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,8 +39,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(700px circle at 50% 10%, rgba(104, 182, 148, 0.08), transparent 65%),
-    radial-gradient(600px circle at 85% 45%, rgba(93, 156, 179, 0.06), transparent 65%),
+    radial-gradient(750px circle at 50% 8%, rgba(96, 165, 250, 0.085), transparent 65%),
+    radial-gradient(620px circle at 85% 45%, rgba(56, 189, 248, 0.055), transparent 65%),
     var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
@@ -95,14 +98,14 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
    ============================================================ */
 .liquid-glass {
   position: relative;
-  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.025) 60%, rgba(104,182,148,0.035) 100%);
-  backdrop-filter: blur(22px) saturate(165%);
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.025) 60%, rgba(96,165,250,0.04) 100%);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   box-shadow:
-    0 14px 36px -12px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.22),
-    inset 0 -1px 1px rgba(104, 182, 148, 0.08);
+    0 14px 36px -12px rgba(0, 0, 0, 0.68),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.24),
+    inset 0 -1px 1px rgba(96, 165, 250, 0.08);
   transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
               box-shadow 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
               border-color 0.28s ease,
@@ -115,7 +118,7 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
   position: absolute;
   inset: 0;
   background: radial-gradient(280px circle at var(--gx, -999px) var(--gy, -999px),
-              rgba(104, 182, 148, 0.16),
+              rgba(96, 165, 250, 0.16),
               rgba(255, 255, 255, 0.05) 45%,
               transparent 70%);
   opacity: 0;
@@ -138,14 +141,14 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
   color: var(--ink);
   cursor: pointer;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 65%, rgba(104,182,148,0.08) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 65%, rgba(96,165,250,0.08) 100%);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
     0 8px 24px -6px rgba(0, 0, 0, 0.6),
     inset 0 1.5px 1px rgba(255, 255, 255, 0.32),
-    inset 0 -1px 2px rgba(104, 182, 148, 0.14);
+    inset 0 -1px 2px rgba(96, 165, 250, 0.14);
   transition: all 0.26s cubic-bezier(0.2, 0.85, 0.25, 1.15);
   text-decoration: none;
 }
@@ -160,26 +163,26 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
 }
 .liquid-btn:hover {
   transform: translateY(-2px);
-  border-color: rgba(104, 182, 148, 0.5);
+  border-color: rgba(96, 165, 250, 0.52);
   box-shadow:
-    0 14px 30px -8px rgba(104, 182, 148, 0.22),
+    0 14px 30px -8px rgba(96, 165, 250, 0.24),
     inset 0 1.5px 1.5px rgba(255, 255, 255, 0.45),
-    inset 0 -1.5px 3px rgba(104, 182, 148, 0.25);
+    inset 0 -1.5px 3px rgba(96, 165, 250, 0.25);
   text-decoration: none;
 }
 .liquid-btn:hover::before { opacity: 1; }
 
 .liquid-btn.primary {
-  background: linear-gradient(135deg, rgba(104, 182, 148, 0.38) 0%, rgba(93, 156, 179, 0.24) 100%);
-  color: #f3faf7;
-  border-color: rgba(104, 182, 148, 0.55);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.36) 0%, rgba(56, 189, 248, 0.22) 100%);
+  color: #f8fafc;
+  border-color: rgba(96, 165, 250, 0.58);
   box-shadow:
-    0 10px 28px -6px rgba(104, 182, 148, 0.25),
+    0 10px 28px -6px rgba(96, 165, 250, 0.26),
     inset 0 1.5px 1px rgba(255, 255, 255, 0.45);
 }
 .liquid-btn.primary:hover {
-  background: linear-gradient(135deg, rgba(104, 182, 148, 0.52) 0%, rgba(93, 156, 179, 0.36) 100%);
-  border-color: rgba(104, 182, 148, 0.8);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.5) 0%, rgba(56, 189, 248, 0.34) 100%);
+  border-color: rgba(96, 165, 250, 0.85);
 }
 
 .liquid-btn.sm {
@@ -203,11 +206,11 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
 }
 .uav-toggle-btn[aria-pressed="true"] {
   color: var(--ink);
-  border-color: rgba(104, 182, 148, 0.42);
+  border-color: rgba(52, 211, 153, 0.45);
 }
 .uav-toggle-btn[aria-pressed="true"] .uav-led {
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  background: var(--status-green);
+  box-shadow: 0 0 9px var(--status-green);
 }
 
 /* Tactile visual glass-tap shockwave ring at click coordinates */
@@ -220,17 +223,17 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  border: 1.5px solid rgba(104, 182, 148, 0.85);
-  box-shadow: 0 0 14px rgba(104, 182, 148, 0.55), inset 0 0 8px rgba(255, 255, 255, 0.65);
-  animation: glassTapWave 0.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border: 1.5px solid rgba(96, 165, 250, 0.75);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.45), inset 0 0 6px rgba(255, 255, 255, 0.6);
+  animation: glassTapWave 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes glassTapWave {
   0% {
     transform: scale(0.4);
-    opacity: 0.95;
+    opacity: 0.85;
   }
   100% {
-    transform: scale(4.2);
+    transform: scale(3.8);
     opacity: 0;
   }
 }
@@ -269,8 +272,8 @@ nav.top-pill {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  background: var(--status-green);
+  box-shadow: 0 0 10px var(--status-green);
 }
 
 .nav-tabs {
@@ -301,7 +304,7 @@ nav.top-pill {
 }
 .nav-tab.active, .nav-tab[aria-current="page"] {
   color: var(--ink);
-  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(104,182,148,0.16) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(96,165,250,0.18) 100%);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
     0 6px 14px -4px rgba(0, 0, 0, 0.5),
@@ -345,8 +348,8 @@ nav.top-pill {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  background: var(--status-green);
+  box-shadow: 0 0 10px var(--status-green);
 }
 
 /* Open, spacious panoramic stage (no heavy outer box clutter) */
@@ -360,7 +363,7 @@ nav.top-pill {
   border-radius: 28px;
   padding: 28px 32px 28px;
   background:
-    radial-gradient(480px circle at 50% 42%, rgba(104, 182, 148, 0.10), transparent 72%);
+    radial-gradient(480px circle at 50% 42%, rgba(96, 165, 250, 0.10), transparent 72%);
 }
 
 /* 3D Curved Rolling Panorama of Project Screens Floating Behind the Portrait */
