@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tailless UAV Aerodynamic Design &amp; BEM Propulsion — Komgbenda Joseph Oryiman</title>
+<meta name="description" content="Aerodynamic design and vortex-lattice analysis of a 1.8 m swept tailless flying-wing UAV (E186 / MH49 reflexed airfoils, -4.5 deg washout, 960 quad panels) and BEM propeller matching.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">Home</a>
+        <a class="nav-tab active" href="projects.html" aria-current="page">Projects</a>
+        <a class="nav-tab" href="cad-portfolio.html">CAD Portfolio</a>
+        <a class="nav-tab" href="resume.html">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="mailto:komgbendajoseph6@gmail.com">Let’s Talk ↗</a>
+    </nav>
+  </div>
+
+  <div class="page-head">
+    <div class="wrap">
+      <span class="kicker">Applied Aerodynamics &amp; Propulsion &middot; Turing (Nov 2026)</span>
+      <h1>Tailless Flying-Wing UAV Design &amp; BEM Propeller Matching</h1>
+      <p class="lede">
+        Aerodynamic sizing, reflexed airfoil trade study (E186 &amp; MH49 vs. NACA 0012 / 2412), vortex-lattice
+        stability analysis in AVL, and multi-operating-point blade element momentum (BEM) propeller-motor matching.
+      </p>
+      <div style="margin-top: 18px;">
+        <a class="liquid-btn sm" href="projects.html">&larr; Back to Projects</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">1.800<span>m</span></div>
+          <span class="telemetry-hint">AR 5.294</span>
+        </div>
+        <div class="stat-lbl">Wingspan across 0.612 m&sup2; projected wing area (MAC 0.344 m)</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">15.24&deg;</div>
+          <span class="telemetry-hint">Taper 0.700</span>
+        </div>
+        <div class="stat-lbl">Root-to-tip sweep angle paired with &minus;4.50&deg; tip washout twist</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">960<span>Panels</span></div>
+          <span class="telemetry-hint">AVL / VLM</span>
+        </div>
+        <div class="stat-lbl">Structured quad-panel aerodynamic surface grid for longitudinal trim &amp; stability</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">E186 / MH49</div>
+          <span class="telemetry-hint">Reflexed Camber</span>
+        </div>
+        <div class="stat-lbl">Self-trimming reflexed flying-wing airfoils evaluated with section polar data</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec">
+    <div class="wrap two-col">
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">01 · Aerodynamic Configuration</span>
+        <h2>Tailless Flying-Wing Trim &amp; Stability</h2>
+        <p>
+          Without a horizontal tailplane, a flying-wing UAV must achieve positive pitch stiffness
+          ($C_{m\alpha} &lt; 0$) and zero pitching moment at cruise ($C_{m0} &gt; 0$) purely through planform
+          sweep, geometric washout, and reflexed airfoil camber.
+        </p>
+        <p style="margin-bottom:0;">
+          The reference geometry combines a <b>15.24&deg; root-to-tip sweep</b> and <b>&minus;4.50&deg; geometric tip washout</b>
+          with reflexed flying-wing sections (<b>Eppler E186</b> and <b>Martin Hepperle MH49</b> benchmarked against
+          baseline NACA 0012 and NACA 2412 profiles), analysed in <b>AVL</b> using viscous section polar data and
+          exported as buildable <b>STEP AP242</b> geometry.
+        </p>
+      </div>
+
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">02 · Geometric &amp; Mesh Parameters</span>
+        <h2>Main Wing Specification</h2>
+        <ul class="result-list">
+          <li><span class="k">Wingspan</span><span class="v">1.800 m (projected span 1.800 m)</span></li>
+          <li><span class="k">Wing Area</span><span class="v">0.612 m&sup2; (projected area 0.612 m&sup2;)</span></li>
+          <li><span class="k">Root Chord &amp; MAC</span><span class="v">0.400 m root chord &middot; 0.344 m MAC</span></li>
+          <li><span class="k">Aspect &amp; Taper Ratio</span><span class="v">AR 5.294 &middot; Taper ratio 0.700</span></li>
+          <li><span class="k">Sweep &amp; Tip Twist</span><span class="v">15.240&deg; root-tip sweep &middot; &minus;4.500&deg; tip washout</span></li>
+          <li><span class="k">Discretisation</span><span class="v">960 structured quad panels &middot; STEP AP242 CAD export</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Aerodynamic Geometry &amp; Airfoil Trade Study</span>
+          <h2>VLM Panel Mesh, 3D Surface &amp; Reflexed Profiles</h2>
+        </div>
+      </div>
+
+      <div class="gallery">
+        <figure class="liquid-glass">
+          <img src="assets/uav-wing-mesh.jpg" alt="Tailless UAV 960-quad-panel aerodynamic mesh showing span 1.800 m and sweep 15.240 deg">
+          <figcaption>
+            <span>Fig. 01 &mdash; 960-quad-panel aerodynamic grid (1.80 m span, 15.24&deg; sweep, &minus;4.5&deg; washout)</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/uav-wing-shaded.jpg" alt="Tailless UAV shaded 3D wing surface geometry">
+          <figcaption>
+            <span>Fig. 02 &mdash; Shaded 3D flying-wing reference surface (MAC 0.344 m, AR 5.294)</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="wide liquid-glass">
+          <img src="assets/uav-airfoils.jpg" alt="Airfoil profile comparison: E186, MH49, NACA0012, and NACA2412">
+          <figcaption>
+            <span>Fig. 03 &mdash; Reflexed flying-wing airfoil overlay: Eppler E186 &amp; MH49 vs. NACA 0012 &amp; NACA 2412</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
