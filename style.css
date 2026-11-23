@@ -284,89 +284,229 @@ nav.top-pill {
 }
 
 /* ============================================================
-   HERO SECTION (HOME)
+   HERO SECTION (3D CURVED PROJECT ARC BEHIND FOREGROUND PORTRAIT)
    ============================================================ */
 .hero {
-  padding: 50px 0 32px;
+  padding: 28px 0 36px;
   position: relative;
-  text-align: center;
 }
-.hero-kicker {
+
+.hero-top-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.hero-top-meta .meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 18px;
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  color: var(--muted);
-  margin-bottom: 16px;
+  gap: 9px;
 }
-.hero-kicker b { color: var(--ink); font-weight: 500; }
+.hero-top-meta .meta-item b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.hero-top-meta .meta-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.14);
+}
 .pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-}
-.hero-banner-name {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(2.5rem, 7.2vw, 5.9rem);
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-  margin: 0;
-  background: linear-gradient(180deg, #ffffff 30%, #a5cfc0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  box-shadow: 0 0 10px var(--accent);
 }
 
-.hero-stage {
-  margin-top: 26px;
-  display: grid;
-  grid-template-columns: 1fr 315px 1fr;
-  gap: 28px;
+/* Panoramic 3D Hero Stage (inspired by Seoyeon layout) */
+.hero-panorama {
+  position: relative;
+  min-height: 540px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: 30px;
+  padding: 36px 38px 34px;
+  background:
+    radial-gradient(520px circle at 50% 35%, rgba(104, 182, 148, 0.13), transparent 70%),
+    linear-gradient(180deg, rgba(13, 18, 26, 0.45) 0%, rgba(8, 11, 16, 0.92) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.75);
+}
+
+/* 3D Curved Arc of Project Screens Floating Behind the Portrait */
+.hero-arc-viewport {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: 72px;
+  height: 225px;
+  perspective: 1150px;
+  z-index: 1;
+  pointer-events: auto;
+}
+.hero-arc-track {
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 18px;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.arc-card {
+  position: relative;
+  width: 225px;
+  height: 145px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #0b1018;
+  box-shadow: 0 16px 38px -10px rgba(0, 0, 0, 0.8);
+  transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease,
+              filter 0.35s ease;
+}
+.arc-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.arc-card .arc-cap {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, transparent, rgba(5, 8, 13, 0.9));
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink);
+  letter-spacing: 0.03em;
+}
+/* 3D Cylindrical Panoramic Curve Angles */
+.arc-card:nth-child(1) { transform: rotateY(32deg) translateZ(-48px) translateY(-6px) scale(0.95); }
+.arc-card:nth-child(2) { transform: rotateY(20deg) translateZ(-95px) translateY(2px) scale(0.92); }
+.arc-card:nth-child(3) { transform: rotateY(9deg)  translateZ(-135px) translateY(8px) scale(0.88); opacity: 0.72; }
+.arc-card:nth-child(4) { transform: rotateY(-9deg) translateZ(-135px) translateY(8px) scale(0.88); opacity: 0.72; }
+.arc-card:nth-child(5) { transform: rotateY(-20deg) translateZ(-95px) translateY(2px) scale(0.92); }
+.arc-card:nth-child(6) { transform: rotateY(-32deg) translateZ(-48px) translateY(-6px) scale(0.95); }
+
+.arc-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 20px 44px -8px rgba(104, 182, 148, 0.4);
+  z-index: 4;
+  opacity: 1 !important;
+}
+
+/* Foreground Studio Cutout Portrait Rising Over the 3D Arc */
+.hero-portrait-center {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: clamp(275px, 31vw, 395px);
+  height: 495px;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.hero-portrait-center img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.85))
+          drop-shadow(0 0 28px rgba(104, 182, 148, 0.14));
+}
+
+/* Bottom Left Title & CTA + Bottom Right Mission Quote & Signature */
+.hero-foreground-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr minmax(200px, 310px) 1fr;
+  align-items: end;
+  gap: 24px;
+  width: 100%;
+}
+.hero-col-left {
   text-align: left;
 }
-.hero-left p {
-  color: var(--muted);
-  font-size: 0.96rem;
-  margin: 0 0 22px;
-}
-.hero-left b { color: var(--ink); }
-
-.portrait-card {
-  position: relative;
-  border-radius: 24px;
-  padding: 9px;
-  transform: rotate(-1.2deg);
-}
-.portrait-card:hover {
-  transform: rotate(0deg) translateY(-4px);
-  border-color: rgba(104, 182, 148, 0.4);
-}
-.portrait-card img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 17px;
-  filter: contrast(1.03) saturate(0.95);
-}
-.floating-badge {
-  position: absolute;
-  left: -14px;
-  bottom: 16px;
-  padding: 9px 14px;
-  border-radius: 14px;
+.hero-greeting {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
 }
-.floating-badge b { color: var(--accent); }
+.hero-col-left h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.1rem, 4.1vw, 3.35rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin: 0 0 20px;
+  color: var(--ink);
+}
+.hero-cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 22px 7px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.hero-cta-pill .arrow-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(10, 15, 22, 0.85);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: transform 0.25s ease;
+}
+.hero-cta-pill:hover .arrow-circle {
+  transform: translateX(2px);
+}
+
+.hero-col-right {
+  text-align: left;
+  justify-self: end;
+  max-width: 335px;
+  padding: 18px 20px;
+  border-radius: 20px;
+}
+.hero-quote {
+  font-size: 0.91rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+.hero-quote b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.hero-signature {
+  font-family: "Brush Script MT", "Segoe Script", "Lucida Handwriting", cursive;
+  font-size: 1.65rem;
+  color: var(--ink);
+  opacity: 0.9;
+  line-height: 1;
+}
 
 /* Hidden solver telemetry that reveals on hover */
 .telemetry-hint {
@@ -381,40 +521,6 @@ nav.top-pill {
   opacity: 1;
   transform: translateY(0);
   color: var(--accent);
-}
-
-.hero-right {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.spec-pill-card {
-  border-radius: 20px;
-  padding: 16px 18px;
-  display: block;
-}
-.spec-pill-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(104, 182, 148, 0.35);
-}
-.spec-pill-card .eyebrow {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.71rem;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.spec-pill-card h3 {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  margin: 4px 0 4px;
-}
-.spec-pill-card p {
-  margin: 0;
-  font-size: 0.83rem;
-  color: var(--muted);
 }
 
 /* ============================================================
@@ -899,8 +1005,23 @@ section.sec, .section {
 .footer-links a:hover { color: var(--accent); }
 
 @media (max-width: 920px) {
-  .hero-stage, .proj-grid, .exp-layout, .process-grid, .two-col {
+  .hero-foreground-grid, .proj-grid, .exp-layout, .process-grid, .two-col {
     grid-template-columns: 1fr;
+  }
+  .hero-panorama {
+    min-height: 640px;
+    padding: 26px 22px;
+  }
+  .hero-portrait-center {
+    position: relative;
+    left: auto;
+    transform: none;
+    margin: 110px auto -20px;
+    height: 360px;
+  }
+  .hero-col-right {
+    justify-self: start;
+    max-width: 100%;
   }
   .stats-grid, .stats-grid.cols-3 {
     grid-template-columns: 1fr 1fr;

@@ -23,7 +23,7 @@
   const NUM_NODES = 38;
   let lines = [];
 
-  const pointer = { x: -9999, y: -9999, vx: 0, vy: 0, lastX: -9999, lastY: -9999 };
+  const pointer = { x: -9999, y: -9999, vx: 0, vy: 0, lastX: -9999, lastY: -9999, lastMoveTime: 0 };
 
   window.addEventListener('mousemove', e => {
     if (pointer.lastX !== -9999) {
@@ -34,6 +34,7 @@
     pointer.y = e.clientY;
     pointer.lastX = e.clientX;
     pointer.lastY = e.clientY;
+    pointer.lastMoveTime = performance.now();
   });
 
   window.addEventListener('mouseleave', () => {
@@ -73,11 +74,11 @@
 
   // 5 cursor-chasing aerospace vehicles: randomized on every page reload (never repeating the same one twice in a row)
   const CRAFT_TYPES = [
-    { id: 'uav',      label: 'UAV',      span: 9.5,  speed: 4.8, turn: 0.085, dualTrail: true },
-    { id: 'rocket',   label: 'Rocket',   span: 3.2,  speed: 5.4, turn: 0.075, dualTrail: false },
-    { id: 'heli',     label: 'Heli',     span: 7.0,  speed: 4.1, turn: 0.105, dualTrail: false },
-    { id: 'drone',    label: 'Drone',    span: 7.5,  speed: 4.5, turn: 0.12,  dualTrail: true },
-    { id: 'airliner', label: 'Airliner', span: 11.8, speed: 4.3, turn: 0.068, dualTrail: true }
+    { id: 'uav',      label: 'UAV',            span: 9.5,  speed: 4.8, turn: 0.085, dualTrail: true },
+    { id: 'rocket',   label: 'SpaceX Falcon',  span: 3.2,  speed: 5.4, turn: 0.08,  dualTrail: false },
+    { id: 'heli',     label: 'Heli',           span: 7.0,  speed: 4.1, turn: 0.105, dualTrail: false },
+    { id: 'drone',    label: 'Drone',          span: 7.5,  speed: 4.5, turn: 0.12,  dualTrail: true },
+    { id: 'airliner', label: 'Airliner',       span: 11.8, speed: 4.3, turn: 0.068, dualTrail: true }
   ];
 
   let uavEnabled = true;
@@ -86,7 +87,6 @@
     uavEnabled = localStorage.getItem('uav_enabled') !== 'false';
     const lastIdx = parseInt(sessionStorage.getItem('last_craft_idx'), 10);
     if (!Number.isNaN(lastIdx) && CRAFT_TYPES.length > 1) {
-      // Pick a random index different from the previous reload so every refresh gives a new aircraft
       const candidates = CRAFT_TYPES.map((_, idx) => idx).filter(idx => idx !== lastIdx);
       craftIdx = candidates[Math.floor(Math.random() * candidates.length)];
     }
@@ -101,7 +101,17 @@
     angle: 0,
     bank: 0,
     trail: [],
-    initialized: false
+    initialized: false,
+    // SpaceX booster re-entry & vertical landing state
+    mode: 'cruise',    // 'cruise' | 'reentry' | 'vertical_descent' | 'landed'
+    legDeploy: 0,      // 0 (folded) -> 1 (deployed A-frame legs)
+    gridFinDeploy: 0,  // 0 -> 1 (upper titanium grid fins)
+    thrustPower: 1,    // 0 (MECO landed) -> 1.3 (retro landing burn)
+    rcsPulse: 0,       // cold-gas nitrogen flip thrusters
+    padX: 300,
+    padY: 300,
+    padAlpha: 0,
+    touchdownPulse: 0
   };
 
   // Inject compact liquid-glass Aircraft ON/OFF toggle + cycle button into the top nav bar
@@ -205,52 +215,140 @@
       ctx.stroke();
 
     } else if (craftId === 'rocket') {
-      // 2. Orbital / Sounding Rocket with flickering thruster plume
-      const flameLen = 8.5 + Math.sin(t * 0.7) * 2.8;
-      ctx.beginPath();
-      ctx.moveTo(-7.5, -2.1);
-      ctx.lineTo(-7.5 - flameLen, 0);
-      ctx.lineTo(-7.5, 2.1);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(104, 182, 148, 0.75)';
-      ctx.fill();
+      // 2. SpaceX Falcon 9 First-Stage Booster (White core, black carbon interstage, titanium grid fins, Octaweb, deployable A-frame landing legs)
+      const thrust = drone.thrustPower;
+      if (thrust > 0.04) {
+        const flameLen = (10.5 + Math.sin(t * 0.85) * 3.4) * thrust;
+        // Outer amber-emerald Merlin 1D plume
+        const plumeGrad = ctx.createLinearGradient(-9.5, 0, -9.5 - flameLen, 0);
+        plumeGrad.addColorStop(0, 'rgba(255, 214, 120, 0.95)');
+        plumeGrad.addColorStop(0.45, 'rgba(104, 182, 148, 0.85)');
+        plumeGrad.addColorStop(1, 'rgba(104, 182, 148, 0)');
+        ctx.beginPath();
+        ctx.moveTo(-9.2, -2.0 * Math.min(1.2, thrust));
+        ctx.quadraticCurveTo(-9.2 - flameLen * 0.5, -3.2 * thrust, -9.2 - flameLen, 0);
+        ctx.quadraticCurveTo(-9.2 - flameLen * 0.5, 3.2 * thrust, -9.2, 2.0 * Math.min(1.2, thrust));
+        ctx.closePath();
+        ctx.fillStyle = plumeGrad;
+        ctx.fill();
 
-      // Rear fins
+        // Bright white-hot Mach diamond core
+        ctx.beginPath();
+        ctx.moveTo(-9.2, -1.0);
+        ctx.lineTo(-9.2 - flameLen * 0.48, 0);
+        ctx.lineTo(-9.2, 1.0);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.fill();
+      }
+
+      // Deployable carbon-fiber A-frame landing legs at the Octaweb base
+      const leg = drone.legDeploy;
+      if (leg > 0.02) {
+        const legSpread = 2.8 + leg * 6.8;
+        const legReach = -8.5 - leg * 3.8;
+        ctx.beginPath();
+        // Left landing leg + telescopic piston strut
+        ctx.moveTo(-5.2, -2.6);
+        ctx.lineTo(legReach, -legSpread);
+        ctx.moveTo(-8.2, -2.4);
+        ctx.lineTo(legReach + 1.8, -legSpread * 0.72);
+        // Right landing leg + telescopic piston strut
+        ctx.moveTo(-5.2, 2.6);
+        ctx.lineTo(legReach, legSpread);
+        ctx.moveTo(-8.2, 2.4);
+        ctx.lineTo(legReach + 1.8, legSpread * 0.72);
+        ctx.strokeStyle = 'rgba(220, 232, 246, 0.92)';
+        ctx.lineWidth = 1.25;
+        ctx.stroke();
+
+        // Landing footpads
+        ctx.beginPath();
+        ctx.moveTo(legReach - 0.5, -legSpread - 1.3);
+        ctx.lineTo(legReach - 0.5, -legSpread + 1.3);
+        ctx.moveTo(legReach - 0.5, legSpread - 1.3);
+        ctx.lineTo(legReach - 0.5, legSpread + 1.3);
+        ctx.strokeStyle = 'rgba(104, 182, 148, 0.95)';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+      }
+
+      // Black Octaweb 9-Merlin engine section at booster base (-9.2 to -6.6)
       ctx.beginPath();
-      ctx.moveTo(-3.5, -2.6);
-      ctx.lineTo(-8.2, -6.5);
-      ctx.lineTo(-7.5, -2.4);
-      ctx.moveTo(-3.5, 2.6);
-      ctx.lineTo(-8.2, 6.5);
-      ctx.lineTo(-7.5, 2.4);
-      ctx.fillStyle = 'rgba(15, 24, 34, 0.9)';
+      ctx.rect(-9.2, -2.7, 2.6, 5.4);
+      ctx.fillStyle = '#0d131c';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.75)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(160, 182, 210, 0.75)';
+      ctx.lineWidth = 0.95;
       ctx.stroke();
 
-      // Rocket cylindrical body + ogive nose cone
+      // White Falcon 9 First-Stage LOX / RP-1 Tank Core (-6.6 to +5.2)
       ctx.beginPath();
-      ctx.moveTo(11.5, 0);
-      ctx.quadraticCurveTo(6.5, -3.1, 2.0, -3.1);
-      ctx.lineTo(-7.5, -2.8);
-      ctx.lineTo(-7.5, 2.8);
-      ctx.lineTo(2.0, 3.1);
-      ctx.quadraticCurveTo(6.5, 3.1, 11.5, 0);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(18, 28, 40, 0.92)';
+      ctx.rect(-6.6, -2.7, 11.8, 5.4);
+      ctx.fillStyle = '#eef3f9';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(238, 242, 248, 0.8)';
+      ctx.strokeStyle = 'rgba(15, 24, 34, 0.9)';
+      ctx.lineWidth = 0.95;
+      ctx.stroke();
+
+      // Folded black landing-leg fairings along lower white booster body
+      ctx.beginPath();
+      ctx.moveTo(-6.6, -2.2);
+      ctx.lineTo(-3.0, -1.7);
+      ctx.moveTo(-6.6, 2.2);
+      ctx.lineTo(-3.0, 1.7);
+      ctx.strokeStyle = '#111924';
       ctx.lineWidth = 1.1;
       ctx.stroke();
 
-      // Stage interstage band
+      // Crisp SpaceX vertical livery stripe along the white booster core
       ctx.beginPath();
-      ctx.moveTo(1.5, -3.0);
-      ctx.lineTo(1.5, 3.0);
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.8)';
-      ctx.lineWidth = 1.2;
+      ctx.moveTo(-2.2, 0);
+      ctx.lineTo(3.8, 0);
+      ctx.strokeStyle = '#0f1822';
+      ctx.lineWidth = 1.15;
       ctx.stroke();
+
+      // Black Carbon-Fiber Interstage Collar (+5.2 to +9.2)
+      ctx.beginPath();
+      ctx.rect(5.2, -2.7, 4.0, 5.4);
+      ctx.fillStyle = '#0e1520';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.8)';
+      ctx.lineWidth = 0.95;
+      ctx.stroke();
+
+      // Aerodynamic nose cap / second-stage adapter (+9.2 to +11.6)
+      ctx.beginPath();
+      ctx.moveTo(9.2, -2.7);
+      ctx.quadraticCurveTo(11.4, -1.8, 12.0, 0);
+      ctx.quadraticCurveTo(11.4, 1.8, 9.2, 2.7);
+      ctx.closePath();
+      ctx.fillStyle = '#eef3f9';
+      ctx.fill();
+
+      // Deployed Titanium Waffle Grid Fins near top of interstage (+6.8)
+      const gf = 1.4 + drone.gridFinDeploy * 2.6;
+      ctx.beginPath();
+      ctx.rect(6.1, -2.7 - gf, 1.8, gf);
+      ctx.rect(6.1, 2.7, 1.8, gf);
+      ctx.fillStyle = 'rgba(20, 30, 44, 0.95)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.9)';
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+
+      // Cold-gas nitrogen RCS thruster puffs during re-entry flip maneuver
+      if (drone.rcsPulse > 0.05) {
+        ctx.beginPath();
+        ctx.moveTo(8.2, -2.9);
+        ctx.lineTo(9.4, -2.9 - 5.5 * drone.rcsPulse);
+        ctx.moveTo(8.2, 2.9);
+        ctx.lineTo(9.4, 2.9 + 5.5 * drone.rcsPulse);
+        ctx.strokeStyle = `rgba(220, 245, 255, ${(drone.rcsPulse * 0.75).toFixed(2)})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
 
     } else if (craftId === 'heli') {
       // 3. Helicopter (Hughes 369H / Bell UH-1 tribute with spinning main rotor)
@@ -402,6 +500,66 @@
     }
   }
 
+  function drawRocketHoldingPod(ctx, px, py, alpha, legDeploy, touchdownPulse) {
+    if (alpha <= 0.01) return;
+    ctx.save();
+    ctx.translate(px, py);
+
+    // Touchdown confirmation telemetry ring on landing
+    if (touchdownPulse > 0.01) {
+      const r = 14 + (1 - touchdownPulse) * 32;
+      ctx.beginPath();
+      ctx.ellipse(0, 2, r, r * 0.35, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(104, 182, 148, ${(touchdownPulse * 0.65).toFixed(3)})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    // Autonomous Spaceport Drone Ship / Rocket Holding Pod deck platform
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 22, 6.2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(11, 18, 28, ${(alpha * 0.92).toFixed(3)})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(104, 182, 148, ${(alpha * 0.78).toFixed(3)})`;
+    ctx.lineWidth = 1.15;
+    ctx.stroke();
+
+    // Inner SpaceX target X-circle on the deck
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 11, 3.1, 0, 0, Math.PI * 2);
+    ctx.moveTo(-6, 0.5);
+    ctx.lineTo(6, 3.5);
+    ctx.moveTo(6, 0.5);
+    ctx.lineTo(-6, 3.5);
+    ctx.strokeStyle = `rgba(104, 182, 148, ${(alpha * 0.55).toFixed(3)})`;
+    ctx.lineWidth = 0.85;
+    ctx.stroke();
+
+    // Mechanical holding pod catch-arms / cradle clamps on the sides
+    const clampIn = legDeploy * 3.5;
+    ctx.beginPath();
+    // Left holding tower arm
+    ctx.moveTo(-16, 1);
+    ctx.lineTo(-16, -9);
+    ctx.lineTo(-10 + clampIn, -7);
+    // Right holding tower arm
+    ctx.moveTo(16, 1);
+    ctx.lineTo(16, -9);
+    ctx.lineTo(10 - clampIn, -7);
+    ctx.strokeStyle = `rgba(220, 232, 246, ${(alpha * 0.82).toFixed(3)})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // Glowing deck alignment beacons
+    ctx.fillStyle = `rgba(104, 182, 148, ${(alpha * 0.95).toFixed(3)})`;
+    ctx.beginPath();
+    ctx.arc(-19, 2, 1.3, 0, Math.PI * 2);
+    ctx.arc(19, 2, 1.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
   let t = 0;
   function animate() {
     t += 1;
@@ -411,49 +569,148 @@
     pointer.vy *= 0.88;
     const influenceRadius = 155;
     const currentCraft = CRAFT_TYPES[craftIdx];
+    const idleMs = performance.now() - pointer.lastMoveTime;
+    const isPointerIdle = pointer.x > -1000 && idleMs > 520;
 
     if (uavEnabled) {
       const hasPointer = pointer.x > -1000 && pointer.y > -1000;
-      const targetX = hasPointer ? pointer.x : (W * 0.5 + Math.cos(t * 0.012) * (W * 0.28));
-      const targetY = hasPointer ? pointer.y : (H * 0.42 + Math.sin(t * 0.024) * (H * 0.16));
 
-      const toDx = targetX - drone.x;
-      const toDy = targetY - drone.y;
-      const toDist = Math.hypot(toDx, toDy);
+      // Special SpaceX Booster Re-Entry, Belly-Flop Flip, and Vertical Self-Landing onto Holding Pod when mouse stops
+      if (currentCraft.id === 'rocket' && isPointerIdle) {
+        // Lock holding pod below cursor position
+        if (drone.mode === 'cruise') {
+          drone.mode = 'reentry';
+          drone.padX = Math.max(50, Math.min(W - 50, pointer.x));
+          drone.padY = Math.max(90, Math.min(H - 40, pointer.y + 44));
+        }
 
-      let desiredAngle = Math.atan2(toDy, toDx);
-      if (toDist < 48) {
-        desiredAngle += 1.15;
+        drone.padAlpha = Math.min(1, drone.padAlpha + 0.06);
+        drone.gridFinDeploy = Math.min(1, drone.gridFinDeploy + 0.06);
+
+        // Target hover point directly above the holding pod before vertical descent
+        const standY = drone.padY - 11.5; // booster base rests at padY
+        const alignErrX = drone.padX - drone.x;
+        const vertAngle = -Math.PI / 2; // nose straight up (↑), Merlin engines straight down (↓)
+
+        if (drone.mode === 'reentry') {
+          // Stage 1: Glide above the holding pod & perform belly-flop flip to vertical (-PI/2)
+          const entryTargetX = drone.padX;
+          const entryTargetY = drone.padY - 74;
+          const dx = entryTargetX - drone.x;
+          const dy = entryTargetY - drone.y;
+          const distToEntry = Math.hypot(dx, dy);
+
+          drone.x += dx * 0.075;
+          drone.y += dy * 0.075;
+
+          // Flip from sideways glide into vertical attitude using cold-gas RCS thrusters
+          let aDiff = vertAngle - drone.angle;
+          while (aDiff > Math.PI) aDiff -= Math.PI * 2;
+          while (aDiff < -Math.PI) aDiff += Math.PI * 2;
+          drone.angle += aDiff * 0.12;
+          drone.rcsPulse = Math.min(1, Math.abs(aDiff) * 1.4);
+          drone.thrustPower = 0.65;
+          drone.legDeploy = Math.max(0, drone.legDeploy - 0.05);
+
+          if (distToEntry < 18 && Math.abs(aDiff) < 0.18) {
+            drone.mode = 'vertical_descent';
+          }
+        } else if (drone.mode === 'vertical_descent') {
+          // Stage 2: Vertical retro-propulsive suicide burn down onto the holding pod
+          let aDiff = vertAngle - drone.angle;
+          while (aDiff > Math.PI) aDiff -= Math.PI * 2;
+          while (aDiff < -Math.PI) aDiff += Math.PI * 2;
+          drone.angle += aDiff * 0.18;
+          drone.x += alignErrX * 0.14;
+
+          const remY = standY - drone.y;
+          const descentRate = Math.max(0.45, Math.min(2.6, remY * 0.085));
+          drone.y += descentRate;
+          drone.vy = descentRate;
+          drone.rcsPulse = Math.abs(alignErrX) > 2 ? 0.5 : 0.15;
+          drone.thrustPower = 1.25; // high retro-thrust landing burn
+
+          // Deploy A-frame landing legs during final 42px before touchdown
+          if (remY < 42) {
+            drone.legDeploy = Math.min(1, drone.legDeploy + 0.08);
+          }
+
+          if (Math.abs(remY) <= 1.2 && drone.legDeploy > 0.9) {
+            drone.y = standY;
+            drone.angle = vertAngle;
+            drone.mode = 'landed';
+            drone.touchdownPulse = 1;
+          }
+        } else if (drone.mode === 'landed') {
+          // Stage 3: Landed vertically on the holding pod (MECO engine cutoff)
+          drone.x += (drone.padX - drone.x) * 0.2;
+          drone.y = standY;
+          drone.angle = vertAngle;
+          drone.thrustPower = Math.max(0, drone.thrustPower - 0.12);
+          drone.legDeploy = 1;
+          drone.rcsPulse = 0;
+          drone.touchdownPulse = Math.max(0, drone.touchdownPulse - 0.025);
+          if (drone.trail.length > 0) drone.trail.shift();
+        }
+
+        // Record vertical exhaust plume while descending
+        if (drone.mode !== 'landed') {
+          const tailX = drone.x - Math.cos(drone.angle) * 9;
+          const tailY = drone.y - Math.sin(drone.angle) * 9;
+          drone.trail.push({ x: tailX, y: tailY, lx: tailX, ly: tailY, rx: tailX, ry: tailY });
+          if (drone.trail.length > 24) drone.trail.shift();
+        }
+      } else {
+        // Normal active flight chasing cursor across streamlines
+        drone.mode = 'cruise';
+        drone.legDeploy = Math.max(0, drone.legDeploy - 0.08);
+        drone.gridFinDeploy = Math.max(0, drone.gridFinDeploy - 0.06);
+        drone.thrustPower = 1;
+        drone.rcsPulse = 0;
+        drone.padAlpha = Math.max(0, drone.padAlpha - 0.07);
+        drone.touchdownPulse = 0;
+
+        const targetX = hasPointer ? pointer.x : (W * 0.5 + Math.cos(t * 0.012) * (W * 0.28));
+        const targetY = hasPointer ? pointer.y : (H * 0.42 + Math.sin(t * 0.024) * (H * 0.16));
+
+        const toDx = targetX - drone.x;
+        const toDy = targetY - drone.y;
+        const toDist = Math.hypot(toDx, toDy);
+
+        let desiredAngle = Math.atan2(toDy, toDx);
+        if (toDist < 48) {
+          desiredAngle += 1.15;
+        }
+
+        let angleDiff = desiredAngle - drone.angle;
+        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+
+        drone.angle += angleDiff * currentCraft.turn;
+        drone.bank = drone.bank * 0.85 + Math.max(-0.55, Math.min(0.55, angleDiff * 1.4)) * 0.15;
+
+        const cruiseSpeed = Math.min(currentCraft.speed, Math.max(1.85, toDist * 0.032));
+        drone.vx = Math.cos(drone.angle) * cruiseSpeed;
+        drone.vy = Math.sin(drone.angle) * cruiseSpeed;
+        drone.x += drone.vx;
+        drone.y += drone.vy;
+
+        const wingSpan = currentCraft.span * (1 - Math.abs(drone.bank) * 0.25);
+        const perpX = -Math.sin(drone.angle);
+        const perpY = Math.cos(drone.angle);
+        const tailX = drone.x - Math.cos(drone.angle) * 6;
+        const tailY = drone.y - Math.sin(drone.angle) * 6;
+
+        drone.trail.push({
+          x: tailX,
+          y: tailY,
+          lx: tailX + perpX * wingSpan,
+          ly: tailY + perpY * wingSpan,
+          rx: tailX - perpX * wingSpan,
+          ry: tailY - perpY * wingSpan
+        });
+        if (drone.trail.length > 34) drone.trail.shift();
       }
-
-      let angleDiff = desiredAngle - drone.angle;
-      while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-      while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-
-      drone.angle += angleDiff * currentCraft.turn;
-      drone.bank = drone.bank * 0.85 + Math.max(-0.55, Math.min(0.55, angleDiff * 1.4)) * 0.15;
-
-      const cruiseSpeed = Math.min(currentCraft.speed, Math.max(1.85, toDist * 0.032));
-      drone.vx = Math.cos(drone.angle) * cruiseSpeed;
-      drone.vy = Math.sin(drone.angle) * cruiseSpeed;
-      drone.x += drone.vx;
-      drone.y += drone.vy;
-
-      const wingSpan = currentCraft.span * (1 - Math.abs(drone.bank) * 0.25);
-      const perpX = -Math.sin(drone.angle);
-      const perpY = Math.cos(drone.angle);
-      const tailX = drone.x - Math.cos(drone.angle) * 6;
-      const tailY = drone.y - Math.sin(drone.angle) * 6;
-
-      drone.trail.push({
-        x: tailX,
-        y: tailY,
-        lx: tailX + perpX * wingSpan,
-        ly: tailY + perpY * wingSpan,
-        rx: tailX - perpX * wingSpan,
-        ry: tailY - perpY * wingSpan
-      });
-      if (drone.trail.length > 34) drone.trail.shift();
     }
 
     for (let i = 0; i < lines.length; i++) {
@@ -534,6 +791,10 @@
           }
           ctx.stroke();
         }
+      }
+
+      if (currentCraft.id === 'rocket' && drone.padAlpha > 0.01) {
+        drawRocketHoldingPod(ctx, drone.padX, drone.padY, drone.padAlpha, drone.legDeploy, drone.touchdownPulse);
       }
 
       ctx.save();
