@@ -64,7 +64,24 @@
         nodes
       });
     }
+    if (!drone.initialized) {
+      drone.x = W * 0.35;
+      drone.y = H * 0.35;
+      drone.initialized = true;
+    }
   }
+
+  // Tiny autonomous tailless flying-wing UAV chasing the cursor across the streamlines
+  const drone = {
+    x: 300,
+    y: 260,
+    vx: 1.4,
+    vy: 0.4,
+    angle: 0,
+    bank: 0,
+    trail: [],
+    initialized: false
+  };
 
   let t = 0;
   function animate() {
@@ -74,6 +91,52 @@
     pointer.vx *= 0.88;
     pointer.vy *= 0.88;
     const influenceRadius = 155;
+
+    // Update autonomous UAV chasing the cursor (or patrolling in a smooth figure-8 if cursor is idle/off-screen)
+    const hasPointer = pointer.x > -1000 && pointer.y > -1000;
+    const targetX = hasPointer ? pointer.x : (W * 0.5 + Math.cos(t * 0.012) * (W * 0.28));
+    const targetY = hasPointer ? pointer.y : (H * 0.42 + Math.sin(t * 0.024) * (H * 0.16));
+
+    const toDx = targetX - drone.x;
+    const toDy = targetY - drone.y;
+    const toDist = Math.hypot(toDx, toDy);
+
+    // Desired velocity vector: smoothly pursue cursor, orbiting gently when very close
+    let desiredAngle = Math.atan2(toDy, toDx);
+    if (toDist < 48) {
+      desiredAngle += 1.15; // banking orbit around stationary pointer
+    }
+
+    // Shortest angular difference for smooth yaw & bank calculation
+    let angleDiff = desiredAngle - drone.angle;
+    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+
+    drone.angle += angleDiff * 0.085;
+    drone.bank = drone.bank * 0.85 + Math.max(-0.55, Math.min(0.55, angleDiff * 1.4)) * 0.15;
+
+    const cruiseSpeed = Math.min(4.8, Math.max(1.85, toDist * 0.032));
+    drone.vx = Math.cos(drone.angle) * cruiseSpeed;
+    drone.vy = Math.sin(drone.angle) * cruiseSpeed;
+    drone.x += drone.vx;
+    drone.y += drone.vy;
+
+    // Record wingtip contrail ribbon
+    const wingSpan = 9.5 * (1 - Math.abs(drone.bank) * 0.28);
+    const perpX = -Math.sin(drone.angle);
+    const perpY = Math.cos(drone.angle);
+    const tailX = drone.x - Math.cos(drone.angle) * 5;
+    const tailY = drone.y - Math.sin(drone.angle) * 5;
+
+    drone.trail.push({
+      x: tailX,
+      y: tailY,
+      lx: tailX + perpX * wingSpan,
+      ly: tailY + perpY * wingSpan,
+      rx: tailX - perpX * wingSpan,
+      ry: tailY - perpY * wingSpan
+    });
+    if (drone.trail.length > 34) drone.trail.shift();
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -85,6 +148,7 @@
         const wave = Math.sin(j * 0.22 + t * line.speed + line.phase) * 4.5;
         const targetY = n.baseY + wave;
 
+        // 1) Cursor pushes streamlines
         const dx = n.x - pointer.x;
         const dy = n.y - pointer.y;
         const dist = Math.hypot(dx, dy);
@@ -94,6 +158,17 @@
           const pushDir = dy === 0 ? 1 : dy / dist;
           n.vy += (pushDir * 2.8 + pointer.vy * 0.16) * falloff;
           n.glow = Math.min(1, n.glow + falloff * 0.35);
+        }
+
+        // 2) Tiny UAV wake also ripples the streamlines as it crosses them
+        const uDx = n.x - drone.x;
+        const uDy = n.y - drone.y;
+        const uDist = Math.hypot(uDx, uDy);
+        if (uDist < 72) {
+          const uFall = Math.pow(1 - uDist / 72, 2);
+          const uDir = uDy === 0 ? 1 : uDy / uDist;
+          n.vy += (uDir * 1.15 + drone.vy * 0.12) * uFall;
+          n.glow = Math.min(1, n.glow + uFall * 0.28);
         }
 
         const spring = (targetY - n.y) * 0.055;
@@ -120,6 +195,65 @@
       ctx.lineWidth = 1 + maxGlow * 0.9;
       ctx.stroke();
     }
+
+    // Draw subtle dual wingtip vortex trails behind the chasing UAV
+    if (drone.trail.length > 2) {
+      for (let k = 1; k < drone.trail.length; k++) {
+        const p0 = drone.trail[k - 1];
+        const p1 = drone.trail[k];
+        const frac = k / drone.trail.length;
+        ctx.strokeStyle = `rgba(104, 182, 148, ${(frac * 0.22).toFixed(3)})`;
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.moveTo(p0.lx, p0.ly);
+        ctx.lineTo(p1.lx, p1.ly);
+        ctx.moveTo(p0.rx, p0.ry);
+        ctx.lineTo(p1.rx, p1.ry);
+        ctx.stroke();
+      }
+    }
+
+    // Draw the tiny tailless swept flying-wing UAV chasing the pointer
+    ctx.save();
+    ctx.translate(drone.x, drone.y);
+    ctx.rotate(drone.angle);
+    ctx.scale(1, 1 - Math.abs(drone.bank) * 0.28);
+
+    // Soft propulsion thruster glow
+    const glowGrad = ctx.createRadialGradient(-4, 0, 0.5, -4, 0, 11);
+    glowGrad.addColorStop(0, 'rgba(104, 182, 148, 0.55)');
+    glowGrad.addColorStop(1, 'rgba(104, 182, 148, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(-4, 0, 11, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Swept flying-wing planform silhouette
+    ctx.beginPath();
+    ctx.moveTo(9.5, 0);        // nose apex
+    ctx.lineTo(-5.5, -10.2);   // left swept wingtip
+    ctx.lineTo(-8.2, -7.8);    // left wingtip trailing edge
+    ctx.lineTo(-3.8, -2.1);    // left inner notch
+    ctx.lineTo(-6.2, 0);       // center exhaust apex
+    ctx.lineTo(-3.8, 2.1);     // right inner notch
+    ctx.lineTo(-8.2, 7.8);     // right wingtip trailing edge
+    ctx.lineTo(-5.5, 10.2);    // right swept wingtip
+    ctx.closePath();
+
+    ctx.fillStyle = 'rgba(15, 24, 34, 0.85)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(104, 182, 148, 0.72)';
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+
+    // Tiny canopy / sensor spine highlight
+    ctx.beginPath();
+    ctx.moveTo(5.2, 0);
+    ctx.lineTo(-2.5, 0);
+    ctx.strokeStyle = 'rgba(238, 242, 248, 0.65)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.restore();
 
     requestAnimationFrame(animate);
   }
