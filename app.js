@@ -24,15 +24,19 @@
   let lines = [];
 
   // 1990s VHF Mission-Control Radio Callout ("*BEEP* Stage one catch confirmed. We have touchdown. *BEEP*")
-  let radioAudioBuffer = null;
   let radioHtmlAudio = null;
+  let lastRadioCalloutMs = 0;
   try {
     radioHtmlAudio = new Audio('assets/touchdown-radio.wav');
     radioHtmlAudio.preload = 'auto';
-    radioHtmlAudio.volume = 0.85;
+    radioHtmlAudio.volume = 0.42;
   } catch (_) {}
 
   function playTouchdownRadioCallout() {
+    const nowMs = performance.now();
+    if (nowMs - lastRadioCalloutMs < 10000) return; // avoid repeating constantly on tiny mouse nudges
+    lastRadioCalloutMs = nowMs;
+
     // 1. Try playing the 1990s VHF radio WAV file (with NASA Quindar tones & radio bandpass filter)
     if (radioHtmlAudio) {
       try {
@@ -1084,8 +1088,8 @@
     });
 
     function animatePanorama() {
-      // Smoothly roll the 3D project cards behind the portrait; slow down on hover for easy clicking
-      const speed = isArcHovered ? 0.00035 : 0.0018;
+      // Ultra-slow, calm architectural glide behind the portrait; pauses completely on hover
+      const speed = isArcHovered ? 0 : 0.00026;
       arcOffset = (arcOffset + speed) % 1;
 
       const N = arcCards.length;
