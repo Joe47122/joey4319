@@ -187,6 +187,29 @@ p.lede { font-size: 1.04rem; color: var(--ink); max-width: 62ch; }
   font-size: 0.79rem;
 }
 
+.uav-toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  padding: 7px 13px;
+  gap: 7px;
+  color: var(--muted);
+}
+.uav-toggle-btn .uav-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--faint);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.uav-toggle-btn[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: rgba(104, 182, 148, 0.42);
+}
+.uav-toggle-btn[aria-pressed="true"] .uav-led {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
 /* ============================================================
    FLOATING LIQUID-GLASS NAVIGATION PILL
    ============================================================ */
