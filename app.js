@@ -102,12 +102,14 @@
     bank: 0,
     trail: [],
     initialized: false,
-    // SpaceX booster re-entry & vertical landing state
-    mode: 'cruise',    // 'cruise' | 'reentry' | 'vertical_descent' | 'landed'
-    legDeploy: 0,      // 0 (folded) -> 1 (deployed A-frame legs)
-    gridFinDeploy: 0,  // 0 -> 1 (upper titanium grid fins)
-    thrustPower: 1,    // 0 (MECO landed) -> 1.3 (retro landing burn)
-    rcsPulse: 0,       // cold-gas nitrogen flip thrusters
+    // SpaceX Super Heavy Mechazilla Launch Tower Chopstick Catch state (matching video 00:00-00:20)
+    mode: 'cruise',       // 'cruise' | 'reentry' | 'chopstick_approach' | 'shutdown_flare' | 'caught'
+    chopstickClose: 0,    // 0 (arms wide open) -> 1 (chopsticks closed under upper grid fins)
+    gridFinDeploy: 0,     // 0 -> 1 (upper waffle grid fins + catch pins)
+    thrustPower: 1,       // 1.35 (diagonal Raptor Mach-diamond jet) -> 0 (MECO)
+    gimbalAngle: 0,       // Raptor thrust-vector gimbal angle during pendulum swing into tower
+    flareProgress: 0,     // 0 -> 1 (00:16-00:18 golden-orange shutdown flame puff + white side vent)
+    rcsPulse: 0,
     padX: 300,
     padY: 300,
     padAlpha: 0,
@@ -215,138 +217,121 @@
       ctx.stroke();
 
     } else if (craftId === 'rocket') {
-      // 2. SpaceX Falcon 9 First-Stage Booster (White core, black carbon interstage, titanium grid fins, Octaweb, deployable A-frame landing legs)
+      // 2. SpaceX Starship Super Heavy Booster (Dark stainless/carbon silhouette, upper grid fins & catch pins, gimbaled Raptor Mach-diamond beam + 00:16-00:18 golden shutdown puff)
       const thrust = drone.thrustPower;
-      if (thrust > 0.04) {
-        const flameLen = (10.5 + Math.sin(t * 0.85) * 3.4) * thrust;
-        // Outer amber-emerald Merlin 1D plume
-        const plumeGrad = ctx.createLinearGradient(-9.5, 0, -9.5 - flameLen, 0);
-        plumeGrad.addColorStop(0, 'rgba(255, 214, 120, 0.95)');
-        plumeGrad.addColorStop(0.45, 'rgba(104, 182, 148, 0.85)');
+      const flare = drone.flareProgress;
+
+      // A) High-velocity Raptor Mach-diamond landing beam (00:01 - 00:15 in video)
+      if (thrust > 0.05 && drone.mode !== 'shutdown_flare' && drone.mode !== 'caught') {
+        ctx.save();
+        ctx.translate(-11.2, 0);
+        ctx.rotate(drone.gimbalAngle || 0);
+
+        const beamLen = (18.5 + Math.sin(t * 1.1) * 3.2) * thrust;
+        // Outer rose-amber-emerald supersonic exhaust plume
+        const plumeGrad = ctx.createLinearGradient(0, 0, -beamLen, 0);
+        plumeGrad.addColorStop(0, 'rgba(255, 245, 220, 0.98)');
+        plumeGrad.addColorStop(0.28, 'rgba(255, 165, 110, 0.92)');
+        plumeGrad.addColorStop(0.65, 'rgba(235, 120, 145, 0.58)');
         plumeGrad.addColorStop(1, 'rgba(104, 182, 148, 0)');
+
         ctx.beginPath();
-        ctx.moveTo(-9.2, -2.0 * Math.min(1.2, thrust));
-        ctx.quadraticCurveTo(-9.2 - flameLen * 0.5, -3.2 * thrust, -9.2 - flameLen, 0);
-        ctx.quadraticCurveTo(-9.2 - flameLen * 0.5, 3.2 * thrust, -9.2, 2.0 * Math.min(1.2, thrust));
+        ctx.moveTo(0, -1.6);
+        ctx.lineTo(-beamLen, 0);
+        ctx.lineTo(0, 1.6);
         ctx.closePath();
         ctx.fillStyle = plumeGrad;
         ctx.fill();
 
-        // Bright white-hot Mach diamond core
+        // Razor-sharp white-hot Mach diamond core
         ctx.beginPath();
-        ctx.moveTo(-9.2, -1.0);
-        ctx.lineTo(-9.2 - flameLen * 0.48, 0);
-        ctx.lineTo(-9.2, 1.0);
+        ctx.moveTo(0, -0.85);
+        ctx.lineTo(-beamLen * 0.62, 0);
+        ctx.lineTo(0, 0.85);
         ctx.closePath();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // B) Flickering Golden-Orange Raptor Shutdown Flame Puff & White Cryo Side Vent (00:16 - 00:19 in video)
+      if (drone.mode === 'shutdown_flare' || (drone.mode === 'caught' && flare > 0.02)) {
+        const puffScale = Math.sin(flare * Math.PI);
+        if (puffScale > 0.04) {
+          ctx.save();
+          ctx.translate(-11.4, 0);
+          // Rolling golden-orange shutdown fireball below nozzle
+          const r1 = 3.6 + puffScale * 5.2;
+          const fireGrad = ctx.createRadialGradient(-r1 * 0.7, 0.6, 0.4, -r1 * 0.8, 0.6, r1 * 1.35);
+          fireGrad.addColorStop(0, 'rgba(255, 245, 175, 0.96)');
+          fireGrad.addColorStop(0.45, 'rgba(255, 148, 38, 0.88)');
+          fireGrad.addColorStop(0.8, 'rgba(215, 68, 22, 0.5)');
+          fireGrad.addColorStop(1, 'rgba(215, 68, 22, 0)');
+          ctx.fillStyle = fireGrad;
+          ctx.beginPath();
+          ctx.arc(-r1 * 0.65, Math.sin(t * 0.7) * 1.1, r1 * 1.2, 0, Math.PI * 2);
+          ctx.arc(-r1 * 1.35, -0.8 + Math.cos(t * 0.8) * 1.1, r1 * 0.85, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // White cryogenic methane/LOX side vent cloud on the left/lower side of the booster (00:14 - 00:20 in video)
+        const ventA = Math.min(1, puffScale * 1.3 + 0.18);
+        ctx.fillStyle = `rgba(225, 236, 248, ${(ventA * 0.55).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.ellipse(-8.5, -4.4 - (1 - puffScale) * 2.5, 2.2, 3.8 + (1 - puffScale) * 2.2, -0.3, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Deployable carbon-fiber A-frame landing legs at the Octaweb base
-      const leg = drone.legDeploy;
-      if (leg > 0.02) {
-        const legSpread = 2.8 + leg * 6.8;
-        const legReach = -8.5 - leg * 3.8;
-        ctx.beginPath();
-        // Left landing leg + telescopic piston strut
-        ctx.moveTo(-5.2, -2.6);
-        ctx.lineTo(legReach, -legSpread);
-        ctx.moveTo(-8.2, -2.4);
-        ctx.lineTo(legReach + 1.8, -legSpread * 0.72);
-        // Right landing leg + telescopic piston strut
-        ctx.moveTo(-5.2, 2.6);
-        ctx.lineTo(legReach, legSpread);
-        ctx.moveTo(-8.2, 2.4);
-        ctx.lineTo(legReach + 1.8, legSpread * 0.72);
-        ctx.strokeStyle = 'rgba(220, 232, 246, 0.92)';
-        ctx.lineWidth = 1.25;
-        ctx.stroke();
-
-        // Landing footpads
-        ctx.beginPath();
-        ctx.moveTo(legReach - 0.5, -legSpread - 1.3);
-        ctx.lineTo(legReach - 0.5, -legSpread + 1.3);
-        ctx.moveTo(legReach - 0.5, legSpread - 1.3);
-        ctx.lineTo(legReach - 0.5, legSpread + 1.3);
-        ctx.strokeStyle = 'rgba(104, 182, 148, 0.95)';
-        ctx.lineWidth = 1.4;
-        ctx.stroke();
-      }
-
-      // Black Octaweb 9-Merlin engine section at booster base (-9.2 to -6.6)
+      // C) Super Heavy Booster Cylindrical Body (-11.2 base to +9.2 upper dome, +12.4 nose tip)
       ctx.beginPath();
-      ctx.rect(-9.2, -2.7, 2.6, 5.4);
-      ctx.fillStyle = '#0d131c';
+      ctx.moveTo(12.6, 0);
+      ctx.quadraticCurveTo(10.8, -2.5, 7.6, -2.6);
+      ctx.lineTo(-11.2, -2.5);
+      ctx.lineTo(-11.2, 2.5);
+      ctx.lineTo(7.6, 2.6);
+      ctx.quadraticCurveTo(10.8, 2.5, 12.6, 0);
+      ctx.closePath();
+      ctx.fillStyle = '#141c27';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(160, 182, 210, 0.75)';
-      ctx.lineWidth = 0.95;
+      ctx.strokeStyle = 'rgba(205, 222, 242, 0.82)';
+      ctx.lineWidth = 1.05;
       ctx.stroke();
 
-      // White Falcon 9 First-Stage LOX / RP-1 Tank Core (-6.6 to +5.2)
+      // Metallic stainless-steel specular highlight along the fuselage spine + hot-stage ring
       ctx.beginPath();
-      ctx.rect(-6.6, -2.7, 11.8, 5.4);
-      ctx.fillStyle = '#eef3f9';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(15, 24, 34, 0.9)';
-      ctx.lineWidth = 0.95;
-      ctx.stroke();
-
-      // Folded black landing-leg fairings along lower white booster body
-      ctx.beginPath();
-      ctx.moveTo(-6.6, -2.2);
-      ctx.lineTo(-3.0, -1.7);
-      ctx.moveTo(-6.6, 2.2);
-      ctx.lineTo(-3.0, 1.7);
-      ctx.strokeStyle = '#111924';
+      ctx.moveTo(-10.8, -0.9);
+      ctx.lineTo(8.5, -0.9);
+      ctx.strokeStyle = 'rgba(238, 245, 255, 0.38)';
       ctx.lineWidth = 1.1;
       ctx.stroke();
 
-      // Crisp SpaceX vertical livery stripe along the white booster core
+      // Hot-staging ring collar near top (+6.2)
       ctx.beginPath();
-      ctx.moveTo(-2.2, 0);
-      ctx.lineTo(3.8, 0);
-      ctx.strokeStyle = '#0f1822';
-      ctx.lineWidth = 1.15;
+      ctx.moveTo(6.2, -2.6);
+      ctx.lineTo(6.2, 2.6);
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.85)';
+      ctx.lineWidth = 1.25;
       ctx.stroke();
 
-      // Black Carbon-Fiber Interstage Collar (+5.2 to +9.2)
+      // D) 4 Deployed Waffle Grid Fins + Lifting Catch Pins below hot-stage ring (+4.6)
+      const gf = 1.8 + drone.gridFinDeploy * 2.4;
       ctx.beginPath();
-      ctx.rect(5.2, -2.7, 4.0, 5.4);
-      ctx.fillStyle = '#0e1520';
+      ctx.rect(4.2, -2.6 - gf, 1.9, gf);
+      ctx.rect(4.2, 2.6, 1.9, gf);
+      ctx.fillStyle = '#0d131c';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.8)';
+      ctx.strokeStyle = 'rgba(104, 182, 148, 0.92)';
       ctx.lineWidth = 0.95;
       ctx.stroke();
 
-      // Aerodynamic nose cap / second-stage adapter (+9.2 to +11.6)
-      ctx.beginPath();
-      ctx.moveTo(9.2, -2.7);
-      ctx.quadraticCurveTo(11.4, -1.8, 12.0, 0);
-      ctx.quadraticCurveTo(11.4, 1.8, 9.2, 2.7);
-      ctx.closePath();
-      ctx.fillStyle = '#eef3f9';
-      ctx.fill();
-
-      // Deployed Titanium Waffle Grid Fins near top of interstage (+6.8)
-      const gf = 1.4 + drone.gridFinDeploy * 2.6;
-      ctx.beginPath();
-      ctx.rect(6.1, -2.7 - gf, 1.8, gf);
-      ctx.rect(6.1, 2.7, 1.8, gf);
-      ctx.fillStyle = 'rgba(20, 30, 44, 0.95)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.9)';
-      ctx.lineWidth = 0.9;
-      ctx.stroke();
-
-      // Cold-gas nitrogen RCS thruster puffs during re-entry flip maneuver
+      // Cold-gas RCS thruster puffs at upper booster during initial flip
       if (drone.rcsPulse > 0.05) {
         ctx.beginPath();
-        ctx.moveTo(8.2, -2.9);
-        ctx.lineTo(9.4, -2.9 - 5.5 * drone.rcsPulse);
-        ctx.moveTo(8.2, 2.9);
-        ctx.lineTo(9.4, 2.9 + 5.5 * drone.rcsPulse);
-        ctx.strokeStyle = `rgba(220, 245, 255, ${(drone.rcsPulse * 0.75).toFixed(2)})`;
-        ctx.lineWidth = 1.2;
+        ctx.moveTo(8.6, -2.8);
+        ctx.lineTo(9.6, -2.8 - 5.2 * drone.rcsPulse);
+        ctx.strokeStyle = `rgba(225, 245, 255, ${(drone.rcsPulse * 0.72).toFixed(2)})`;
+        ctx.lineWidth = 1.15;
         ctx.stroke();
       }
 
@@ -500,61 +485,92 @@
     }
   }
 
-  function drawRocketHoldingPod(ctx, px, py, alpha, legDeploy, touchdownPulse) {
+  function drawRocketHoldingPod(ctx, px, py, alpha, chopstickClose, touchdownPulse) {
     if (alpha <= 0.01) return;
     ctx.save();
+    // Anchor at (px, py) where the booster hangs at x = px, y = py (with its upper grid fins caught at y = py - 5)
     ctx.translate(px, py);
 
-    // Touchdown confirmation telemetry ring on landing
+    // Subtle telemetry confirmation pulse when Chopsticks lock onto the booster
     if (touchdownPulse > 0.01) {
-      const r = 14 + (1 - touchdownPulse) * 32;
+      const r = 10 + (1 - touchdownPulse) * 28;
       ctx.beginPath();
-      ctx.ellipse(0, 2, r, r * 0.35, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(104, 182, 148, ${(touchdownPulse * 0.65).toFixed(3)})`;
-      ctx.lineWidth = 1.2;
+      ctx.arc(0, -5, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(104, 182, 148, ${(touchdownPulse * 0.6).toFixed(3)})`;
+      ctx.lineWidth = 1.1;
       ctx.stroke();
     }
 
-    // Autonomous Spaceport Drone Ship / Rocket Holding Pod deck platform
-    ctx.beginPath();
-    ctx.ellipse(0, 2, 22, 6.2, 0, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(11, 18, 28, ${(alpha * 0.92).toFixed(3)})`;
-    ctx.fill();
-    ctx.strokeStyle = `rgba(104, 182, 148, ${(alpha * 0.78).toFixed(3)})`;
-    ctx.lineWidth = 1.15;
-    ctx.stroke();
+    // Mechazilla Launch Integration Tower stands to the left of the catch center (x = -15 to -9, y = -20 to +28)
+    const txL = -15.5;
+    const txR = -9.5;
+    const tyTop = -20;
+    const tyBot = 28;
 
-    // Inner SpaceX target X-circle on the deck
+    // Ground launch pad base plinth under the tower
     ctx.beginPath();
-    ctx.ellipse(0, 2, 11, 3.1, 0, 0, Math.PI * 2);
-    ctx.moveTo(-6, 0.5);
-    ctx.lineTo(6, 3.5);
-    ctx.moveTo(6, 0.5);
-    ctx.lineTo(-6, 3.5);
+    ctx.moveTo(-21, tyBot);
+    ctx.lineTo(14, tyBot);
     ctx.strokeStyle = `rgba(104, 182, 148, ${(alpha * 0.55).toFixed(3)})`;
-    ctx.lineWidth = 0.85;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
 
-    // Mechanical holding pod catch-arms / cradle clamps on the sides
-    const clampIn = legDeploy * 3.5;
+    // Vertical lattice tower columns
+    ctx.fillStyle = `rgba(12, 19, 28, ${(alpha * 0.88).toFixed(3)})`;
+    ctx.fillRect(txL, tyTop, txR - txL, tyBot - tyTop);
+
     ctx.beginPath();
-    // Left holding tower arm
-    ctx.moveTo(-16, 1);
-    ctx.lineTo(-16, -9);
-    ctx.lineTo(-10 + clampIn, -7);
-    // Right holding tower arm
-    ctx.moveTo(16, 1);
-    ctx.lineTo(16, -9);
-    ctx.lineTo(10 - clampIn, -7);
-    ctx.strokeStyle = `rgba(220, 232, 246, ${(alpha * 0.82).toFixed(3)})`;
-    ctx.lineWidth = 1.2;
+    ctx.rect(txL, tyTop, txR - txL, tyBot - tyTop);
+    // Internal X-bracing truss latticework (8 bays up the tower)
+    const bays = 7;
+    const bayH = (tyBot - tyTop) / bays;
+    for (let b = 0; b < bays; b++) {
+      const y0 = tyTop + b * bayH;
+      const y1 = y0 + bayH;
+      ctx.moveTo(txL, y0);
+      ctx.lineTo(txR, y1);
+      ctx.moveTo(txR, y0);
+      ctx.lineTo(txL, y1);
+    }
+    ctx.strokeStyle = `rgba(165, 190, 218, ${(alpha * 0.72).toFixed(3)})`;
+    ctx.lineWidth = 0.9;
     ctx.stroke();
 
-    // Glowing deck alignment beacons
-    ctx.fillStyle = `rgba(104, 182, 148, ${(alpha * 0.95).toFixed(3)})`;
+    // Top tower crown & lightning mast
     ctx.beginPath();
-    ctx.arc(-19, 2, 1.3, 0, Math.PI * 2);
-    ctx.arc(19, 2, 1.3, 0, Math.PI * 2);
+    ctx.moveTo(txL - 1, tyTop);
+    ctx.lineTo(txR + 2.5, tyTop);
+    ctx.moveTo((txL + txR) * 0.5, tyTop);
+    ctx.lineTo((txL + txR) * 0.5, tyTop - 5.5);
+    ctx.strokeStyle = `rgba(220, 234, 248, ${(alpha * 0.85).toFixed(3)})`;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+
+    // Mechazilla Horizontal Chopstick Catch Arms extending right from upper tower (y = -5)
+    const armY = -5.2;
+    const armReachX = 7.2 - chopstickClose * 1.4;
+    ctx.beginPath();
+    // Upper diagonal suspension cable from tower top to chopstick tip
+    ctx.moveTo(txR, tyTop + 2.5);
+    ctx.lineTo(armReachX - 1.5, armY - 1.2);
+    // Main horizontal chopstick catch beams (front & back rails)
+    ctx.moveTo(txR - 1, armY - 1.3);
+    ctx.lineTo(armReachX, armY - 0.6);
+    ctx.moveTo(txR - 1, armY + 1.5);
+    ctx.lineTo(armReachX, armY + 0.8);
+    // Lower diagonal support strut under chopstick carriage
+    ctx.moveTo(txR, armY + 6.5);
+    ctx.lineTo(-2.5, armY + 1.2);
+    ctx.strokeStyle = `rgba(104, 182, 148, ${(alpha * 0.95).toFixed(3)})`;
+    ctx.lineWidth = 1.25;
+    ctx.stroke();
+
+    // Glowing green catch-lock indicator beacon on the chopstick tip
+    ctx.fillStyle = chopstickClose > 0.85
+      ? `rgba(104, 182, 148, ${alpha.toFixed(3)})`
+      : `rgba(255, 200, 110, ${(alpha * 0.9).toFixed(3)})`;
+    ctx.beginPath();
+    ctx.arc(0, armY, 1.5, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
@@ -575,97 +591,124 @@
     if (uavEnabled) {
       const hasPointer = pointer.x > -1000 && pointer.y > -1000;
 
-      // Special SpaceX Booster Re-Entry, Belly-Flop Flip, and Vertical Self-Landing onto Holding Pod when mouse stops
+      // Exact SpaceX Super Heavy Mechazilla Chopstick Tower Catch choreography (from uploaded video 00:00-00:20)
       if (currentCraft.id === 'rocket' && isPointerIdle) {
-        // Lock holding pod below cursor position
         if (drone.mode === 'cruise') {
           drone.mode = 'reentry';
-          drone.padX = Math.max(50, Math.min(W - 50, pointer.x));
-          drone.padY = Math.max(90, Math.min(H - 40, pointer.y + 44));
+          // Position the Mechazilla tower catch point near the stopped cursor
+          drone.padX = Math.max(60, Math.min(W - 60, pointer.x));
+          drone.padY = Math.max(95, Math.min(H - 55, pointer.y + 22));
+          // Start booster up and to the right of the tower so it descends diagonally down-left into the chopsticks (00:01-00:08)
+          drone.x = Math.min(W - 30, drone.padX + 54);
+          drone.y = Math.max(30, drone.padY - 76);
+          drone.angle = -Math.PI * 0.15; // sideways entry (00:00)
+          drone.flareProgress = 0;
         }
 
-        drone.padAlpha = Math.min(1, drone.padAlpha + 0.06);
-        drone.gridFinDeploy = Math.min(1, drone.gridFinDeploy + 0.06);
+        drone.padAlpha = Math.min(1, drone.padAlpha + 0.065);
+        drone.gridFinDeploy = Math.min(1, drone.gridFinDeploy + 0.07);
 
-        // Target hover point directly above the holding pod before vertical descent
-        const standY = drone.padY - 11.5; // booster base rests at padY
-        const alignErrX = drone.padX - drone.x;
-        const vertAngle = -Math.PI / 2; // nose straight up (↑), Merlin engines straight down (↓)
+        const vertAngle = -Math.PI / 2; // straight upright (↑)
+        const diagTiltAngle = -Math.PI * 0.63; // ~23° tilted back (nose up-left, Raptor beam firing down-right as in 00:03-00:09)
 
         if (drone.mode === 'reentry') {
-          // Stage 1: Glide above the holding pod & perform belly-flop flip to vertical (-PI/2)
-          const entryTargetX = drone.padX;
-          const entryTargetY = drone.padY - 74;
-          const dx = entryTargetX - drone.x;
-          const dy = entryTargetY - drone.y;
-          const distToEntry = Math.hypot(dx, dy);
+          // 00:00 - 00:06: Pitch from sideways drop into the 23° tilted diagonal vector-braking descent toward the tower top
+          const approachX = drone.padX + 20;
+          const approachY = drone.padY - 34;
+          const dx = approachX - drone.x;
+          const dy = approachY - drone.y;
+          const dist = Math.hypot(dx, dy);
 
-          drone.x += dx * 0.075;
-          drone.y += dy * 0.075;
+          drone.x += dx * 0.065;
+          drone.y += dy * 0.065;
 
-          // Flip from sideways glide into vertical attitude using cold-gas RCS thrusters
-          let aDiff = vertAngle - drone.angle;
+          let aDiff = diagTiltAngle - drone.angle;
           while (aDiff > Math.PI) aDiff -= Math.PI * 2;
           while (aDiff < -Math.PI) aDiff += Math.PI * 2;
-          drone.angle += aDiff * 0.12;
+          drone.angle += aDiff * 0.11;
+          drone.gimbalAngle = -0.18; // Raptor gimbaled to push tail under
           drone.rcsPulse = Math.min(1, Math.abs(aDiff) * 1.4);
-          drone.thrustPower = 0.65;
-          drone.legDeploy = Math.max(0, drone.legDeploy - 0.05);
+          drone.thrustPower = 1.35;  // long bright Mach-diamond Raptor beam
+          drone.chopstickClose = 0;
 
-          if (distToEntry < 18 && Math.abs(aDiff) < 0.18) {
-            drone.mode = 'vertical_descent';
+          if (dist < 14) {
+            drone.mode = 'chopstick_approach';
           }
-        } else if (drone.mode === 'vertical_descent') {
-          // Stage 2: Vertical retro-propulsive suicide burn down onto the holding pod
-          let aDiff = vertAngle - drone.angle;
+        } else if (drone.mode === 'chopstick_approach') {
+          // 00:07 - 00:15: Translate diagonally down-left into the open Chopstick arms while gimbaling upright to vertical (-PI/2)
+          const dx = drone.padX - drone.x;
+          const dy = drone.padY - drone.y;
+          const dist = Math.hypot(dx, dy);
+
+          drone.x += dx * 0.095;
+          drone.y += dy * 0.095;
+
+          // Swing lower booster like a pendulum from 23° diagonal tilt into dead vertical (-PI/2) as it enters the chopsticks
+          const progress = Math.max(0, Math.min(1, 1 - dist / 38));
+          const targetAng = diagTiltAngle + (vertAngle - diagTiltAngle) * progress;
+          let aDiff = targetAng - drone.angle;
           while (aDiff > Math.PI) aDiff -= Math.PI * 2;
           while (aDiff < -Math.PI) aDiff += Math.PI * 2;
           drone.angle += aDiff * 0.18;
-          drone.x += alignErrX * 0.14;
 
-          const remY = standY - drone.y;
-          const descentRate = Math.max(0.45, Math.min(2.6, remY * 0.085));
-          drone.y += descentRate;
-          drone.vy = descentRate;
-          drone.rcsPulse = Math.abs(alignErrX) > 2 ? 0.5 : 0.15;
-          drone.thrustPower = 1.25; // high retro-thrust landing burn
+          // Visible Raptor gimbal steering right then centering
+          drone.gimbalAngle = (1 - progress) * 0.26;
+          drone.thrustPower = 1.25 - progress * 0.35;
+          drone.rcsPulse = 0.2;
+          drone.chopstickClose = Math.max(0, (progress - 0.35) / 0.65);
 
-          // Deploy A-frame landing legs during final 42px before touchdown
-          if (remY < 42) {
-            drone.legDeploy = Math.min(1, drone.legDeploy + 0.08);
-          }
-
-          if (Math.abs(remY) <= 1.2 && drone.legDeploy > 0.9) {
-            drone.y = standY;
+          if (dist < 1.4 && Math.abs(vertAngle - drone.angle) < 0.06) {
+            drone.x = drone.padX;
+            drone.y = drone.padY;
             drone.angle = vertAngle;
-            drone.mode = 'landed';
+            drone.gimbalAngle = 0;
+            drone.chopstickClose = 1;
             drone.touchdownPulse = 1;
+            drone.flareProgress = 0.02;
+            drone.mode = 'shutdown_flare';
           }
-        } else if (drone.mode === 'landed') {
-          // Stage 3: Landed vertically on the holding pod (MECO engine cutoff)
-          drone.x += (drone.padX - drone.x) * 0.2;
-          drone.y = standY;
+        } else if (drone.mode === 'shutdown_flare') {
+          // 00:16 - 00:18: Caught in chopsticks! Raptor beam collapses into flickering golden-orange shutdown flame puff + white side vent
+          drone.x = drone.padX;
+          drone.y = drone.padY;
           drone.angle = vertAngle;
-          drone.thrustPower = Math.max(0, drone.thrustPower - 0.12);
-          drone.legDeploy = 1;
+          drone.chopstickClose = 1;
+          drone.thrustPower = Math.max(0, drone.thrustPower - 0.08);
+          drone.flareProgress = Math.min(1, drone.flareProgress + 0.024);
+          drone.touchdownPulse = Math.max(0, drone.touchdownPulse - 0.03);
+          if (drone.trail.length > 0) drone.trail.shift();
+
+          if (drone.flareProgress >= 1) {
+            drone.mode = 'caught';
+          }
+        } else if (drone.mode === 'caught') {
+          // 00:19 - 00:20+: Hanging suspended vertically inside the Mechazilla Chopsticks well above the ground pad
+          drone.x = drone.padX;
+          drone.y = drone.padY;
+          drone.angle = vertAngle;
+          drone.thrustPower = 0;
+          drone.chopstickClose = 1;
           drone.rcsPulse = 0;
+          drone.flareProgress = Math.max(0, drone.flareProgress - 0.02);
           drone.touchdownPulse = Math.max(0, drone.touchdownPulse - 0.025);
           if (drone.trail.length > 0) drone.trail.shift();
         }
 
-        // Record vertical exhaust plume while descending
-        if (drone.mode !== 'landed') {
-          const tailX = drone.x - Math.cos(drone.angle) * 9;
-          const tailY = drone.y - Math.sin(drone.angle) * 9;
+        // Record Raptor exhaust wake trail during approach
+        if (drone.mode === 'reentry' || drone.mode === 'chopstick_approach') {
+          const tailX = drone.x - Math.cos(drone.angle) * 11;
+          const tailY = drone.y - Math.sin(drone.angle) * 11;
           drone.trail.push({ x: tailX, y: tailY, lx: tailX, ly: tailY, rx: tailX, ry: tailY });
-          if (drone.trail.length > 24) drone.trail.shift();
+          if (drone.trail.length > 22) drone.trail.shift();
         }
       } else {
         // Normal active flight chasing cursor across streamlines
         drone.mode = 'cruise';
-        drone.legDeploy = Math.max(0, drone.legDeploy - 0.08);
+        drone.chopstickClose = Math.max(0, drone.chopstickClose - 0.08);
         drone.gridFinDeploy = Math.max(0, drone.gridFinDeploy - 0.06);
         drone.thrustPower = 1;
+        drone.gimbalAngle = 0;
+        drone.flareProgress = 0;
         drone.rcsPulse = 0;
         drone.padAlpha = Math.max(0, drone.padAlpha - 0.07);
         drone.touchdownPulse = 0;
@@ -794,7 +837,7 @@
       }
 
       if (currentCraft.id === 'rocket' && drone.padAlpha > 0.01) {
-        drawRocketHoldingPod(ctx, drone.padX, drone.padY, drone.padAlpha, drone.legDeploy, drone.touchdownPulse);
+        drawRocketHoldingPod(ctx, drone.padX, drone.padY, drone.padAlpha, drone.chopstickClose, drone.touchdownPulse);
       }
 
       ctx.save();
