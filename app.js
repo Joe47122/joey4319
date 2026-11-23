@@ -175,7 +175,64 @@
   });
 
   /* ------------------------------------------------------------
-     4. GALLERY IMAGE LIGHTBOX
+     4. GLASS-TAP ACOUSTIC SOUND + HAPTICS + VISUAL RIPPLE
+     ------------------------------------------------------------ */
+  let audioCtx = null;
+  function playGlassTap(isPrimary = false) {
+    // Haptic vibration on mobile / supported hardware
+    if (navigator.vibrate) {
+      navigator.vibrate(isPrimary ? [8, 18, 6] : 6);
+    }
+
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+
+      // High crystalline ping (tempered glass resonance)
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      const baseFreq = isPrimary ? 2650 : 2350;
+      osc1.frequency.setValueAtTime(baseFreq, now);
+      osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.58, now + 0.042);
+
+      gain1.gain.setValueAtTime(0.0001, now);
+      gain1.gain.linearRampToValueAtTime(0.11, now + 0.002);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+      // Subtle tactile body transient (finger impact on glass)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(620, now);
+      osc2.frequency.exponentialRampToValueAtTime(190, now + 0.018);
+
+      gain2.gain.setValueAtTime(0.0001, now);
+      gain2.gain.linearRampToValueAtTime(0.09, now + 0.0015);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+
+      osc1.connect(gain1).connect(audioCtx.destination);
+      osc2.connect(gain2).connect(audioCtx.destination);
+
+      osc1.start(now);
+      osc1.stop(now + 0.048);
+      osc2.start(now);
+      osc2.stop(now + 0.022);
+    } catch (_) {}
+  }
+
+  document.addEventListener('pointerdown', e => {
+    const target = e.target.closest('.liquid-btn, .nav-tab, .filter-pill, .exp-tab-btn, .spec-pill-card, .gallery figure');
+    if (!target) return;
+    playGlassTap(target.classList.contains('primary'));
+  });
+
+  /* ------------------------------------------------------------
+     5. GALLERY IMAGE LIGHTBOX
      ------------------------------------------------------------ */
   const figures = document.querySelectorAll('.gallery figure');
   if (figures.length > 0) {
