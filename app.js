@@ -24,22 +24,19 @@
   let lines = [];
 
   // Authentic 1969 NASA Apollo 11 Human Mission Control Recording ("Houston, Tranquility Base here. The Eagle has landed.")
-  // Plays strictly ONCE when the SpaceX rocket lands in the interface.
+  // Plays for the first 2 landings every time the SpaceX rocket appears (whether via page reload or switching aircraft).
   let radioHtmlAudio = null;
-  let rocketLandingAudioPlayed = false;
+  let rocketLandingPlayCount = 0;
   try {
-    rocketLandingAudioPlayed = sessionStorage.getItem('rocket_landing_audio_played') === 'true';
+    sessionStorage.removeItem('rocket_landing_audio_played');
     radioHtmlAudio = new Audio('assets/touchdown-radio.mp3');
     radioHtmlAudio.preload = 'auto';
-    radioHtmlAudio.volume = 0.55;
+    radioHtmlAudio.volume = 0.58;
   } catch (_) {}
 
   function playTouchdownRadioCallout() {
-    if (rocketLandingAudioPlayed) return; // strictly once per session in the whole interface
-    rocketLandingAudioPlayed = true;
-    try {
-      sessionStorage.setItem('rocket_landing_audio_played', 'true');
-    } catch (_) {}
+    if (rocketLandingPlayCount >= 2) return; // play the first 2 times the rocket lands each round it appears
+    rocketLandingPlayCount += 1;
 
     if (radioHtmlAudio) {
       try {
@@ -47,9 +44,8 @@
         const p = radioHtmlAudio.play();
         if (p && p.catch) {
           p.catch(() => {
-            // If browser blocked autoplay before first click, allow one retry on next landing after click
-            rocketLandingAudioPlayed = false;
-            try { sessionStorage.removeItem('rocket_landing_audio_played'); } catch (_) {}
+            // If browser blocked autoplay before first click, don't count the blocked attempt
+            rocketLandingPlayCount = Math.max(0, rocketLandingPlayCount - 1);
           });
         }
       } catch (_) {}
@@ -180,6 +176,7 @@
       if (!uavEnabled) {
         drone.trail = [];
       } else {
+        rocketLandingPlayCount = 0;
         drone.x = pointer.x > 0 ? pointer.x - 90 : W * 0.35;
         drone.y = pointer.y > 0 ? pointer.y - 60 : H * 0.35;
       }
@@ -189,7 +186,9 @@
     cycleBtn.addEventListener('click', () => {
       craftIdx = (craftIdx + 1) % CRAFT_TYPES.length;
       uavEnabled = true;
+      rocketLandingPlayCount = 0;
       drone.trail = [];
+      drone.mode = 'cruise';
       try {
         localStorage.setItem('uav_enabled', 'true');
         sessionStorage.setItem('last_craft_idx', String(craftIdx));
