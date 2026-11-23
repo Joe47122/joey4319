@@ -309,10 +309,10 @@ nav.top-pill {
 }
 
 /* ============================================================
-   HERO SECTION (3D CURVED PROJECT ARC BEHIND FOREGROUND PORTRAIT)
+   HERO SECTION (CALM, SPACIOUS SEOYEON-STYLE 3D PANORAMA)
    ============================================================ */
 .hero {
-  padding: 28px 0 36px;
+  padding: 18px 0 28px;
   position: relative;
 }
 
@@ -322,15 +322,15 @@ nav.top-pill {
   align-items: center;
   flex-wrap: wrap;
   gap: 18px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--muted);
 }
 .hero-top-meta .meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 .hero-top-meta .meta-item b {
   color: var(--ink);
@@ -338,32 +338,29 @@ nav.top-pill {
 }
 .hero-top-meta .meta-divider {
   width: 1px;
-  height: 14px;
+  height: 13px;
   background: rgba(255, 255, 255, 0.14);
 }
 .pulse-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent);
 }
 
-/* Panoramic 3D Hero Stage (inspired by Seoyeon layout) */
+/* Open, spacious panoramic stage (no heavy outer box clutter) */
 .hero-panorama {
   position: relative;
-  min-height: 540px;
+  min-height: 530px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  border-radius: 30px;
-  padding: 36px 38px 34px;
+  border-radius: 28px;
+  padding: 28px 32px 28px;
   background:
-    radial-gradient(520px circle at 50% 35%, rgba(104, 182, 148, 0.13), transparent 70%),
-    linear-gradient(180deg, rgba(13, 18, 26, 0.45) 0%, rgba(8, 11, 16, 0.92) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.75);
+    radial-gradient(480px circle at 50% 42%, rgba(104, 182, 148, 0.10), transparent 72%);
 }
 
 /* 3D Curved Rolling Panorama of Project Screens Floating Behind the Portrait */
@@ -371,9 +368,9 @@ nav.top-pill {
   position: absolute;
   left: 0;
   right: 0;
-  top: 58px;
-  height: 245px;
-  perspective: 1100px;
+  top: 52px;
+  height: 230px;
+  perspective: 1200px;
   z-index: 2;
   pointer-events: auto;
 }
@@ -387,15 +384,15 @@ nav.top-pill {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 235px;
-  height: 150px;
-  margin-left: -117.5px;
-  margin-top: -75px;
-  border-radius: 15px;
+  width: 220px;
+  height: 138px;
+  margin-left: -110px;
+  margin-top: -69px;
+  border-radius: 13px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   background: #0b1018;
-  box-shadow: 0 16px 38px -10px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.85);
   cursor: pointer;
   will-change: transform, opacity;
   transition: border-color 0.28s ease, box-shadow 0.28s ease;
@@ -408,15 +405,15 @@ nav.top-pill {
   transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 .arc-card:hover img {
-  transform: scale(1.07);
+  transform: scale(1.06);
 }
 .arc-card .arc-cap {
   position: absolute;
   inset: auto 0 0 0;
-  padding: 8px 11px;
-  background: linear-gradient(180deg, transparent, rgba(5, 8, 13, 0.94));
+  padding: 7px 10px;
+  background: linear-gradient(180deg, transparent, rgba(5, 8, 13, 0.92));
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: var(--ink);
   letter-spacing: 0.02em;
   display: flex;
@@ -428,12 +425,12 @@ nav.top-pill {
   content: "Open ↗";
   color: var(--accent);
   font-weight: 600;
-  opacity: 0.75;
+  opacity: 0;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .arc-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 22px 48px -8px rgba(104, 182, 148, 0.5);
+  box-shadow: 0 20px 44px -8px rgba(104, 182, 148, 0.48);
   z-index: 6;
 }
 .arc-card:hover .arc-cap::after {
@@ -447,8 +444,8 @@ nav.top-pill {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: clamp(275px, 31vw, 395px);
-  height: 495px;
+  width: clamp(280px, 32vw, 405px);
+  height: 505px;
   z-index: 3;
   pointer-events: none;
   display: flex;
@@ -460,16 +457,15 @@ nav.top-pill {
   height: 100%;
   object-fit: contain;
   object-position: bottom center;
-  filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.85))
-          drop-shadow(0 0 28px rgba(104, 182, 148, 0.14));
+  filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.9));
 }
 
-/* Bottom Left Title & CTA + Bottom Right Mission Quote & Signature */
+/* Bottom Left Title & CTA + Bottom Right Clean Quote & Signature */
 .hero-foreground-grid {
   position: relative;
   z-index: 4;
   display: grid;
-  grid-template-columns: 1fr minmax(200px, 310px) 1fr;
+  grid-template-columns: 1fr minmax(210px, 330px) 1fr;
   align-items: end;
   gap: 24px;
   width: 100%;
@@ -483,19 +479,19 @@ nav.top-pill {
 }
 .hero-greeting {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
 }
 .hero-col-left h1 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.1rem, 4.1vw, 3.35rem);
+  font-size: clamp(2.1rem, 4vw, 3.25rem);
   line-height: 1.04;
   letter-spacing: -0.03em;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   color: var(--ink);
 }
 .hero-cta-pill {
@@ -526,15 +522,14 @@ nav.top-pill {
 .hero-col-right {
   text-align: left;
   justify-self: end;
-  max-width: 335px;
-  padding: 18px 20px;
-  border-radius: 20px;
+  max-width: 310px;
+  padding: 6px 4px;
 }
 .hero-quote {
-  font-size: 0.91rem;
+  font-size: 0.9rem;
   line-height: 1.55;
   color: var(--muted);
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 .hero-quote b {
   color: var(--ink);
@@ -542,9 +537,9 @@ nav.top-pill {
 }
 .hero-signature {
   font-family: "Brush Script MT", "Segoe Script", "Lucida Handwriting", cursive;
-  font-size: 1.65rem;
+  font-size: 1.75rem;
   color: var(--ink);
-  opacity: 0.9;
+  opacity: 0.92;
   line-height: 1;
 }
 

@@ -19,9 +19,62 @@
   const ctx = canvas.getContext('2d');
   let W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  const NUM_LINES = 26;
-  const NUM_NODES = 38;
+  const NUM_LINES = 16;
+  const NUM_NODES = 34;
   let lines = [];
+
+  // 1990s VHF Mission-Control Radio Callout ("*BEEP* Stage one catch confirmed. We have touchdown. *BEEP*")
+  let radioAudioBuffer = null;
+  let radioHtmlAudio = null;
+  try {
+    radioHtmlAudio = new Audio('assets/touchdown-radio.wav');
+    radioHtmlAudio.preload = 'auto';
+    radioHtmlAudio.volume = 0.85;
+  } catch (_) {}
+
+  function playTouchdownRadioCallout() {
+    // 1. Try playing the 1990s VHF radio WAV file (with NASA Quindar tones & radio bandpass filter)
+    if (radioHtmlAudio) {
+      try {
+        radioHtmlAudio.currentTime = 0;
+        const p = radioHtmlAudio.play();
+        if (p && p.catch) {
+          p.catch(() => playFallbackQuindarSpeech());
+        }
+        return;
+      } catch (_) {}
+    }
+    playFallbackQuindarSpeech();
+  }
+
+  function playFallbackQuindarSpeech() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        // Intro NASA Quindar beep (2525 Hz)
+        const q1 = audioCtx.createOscillator();
+        const qg1 = audioCtx.createGain();
+        q1.type = 'sine';
+        q1.frequency.setValueAtTime(2525, now);
+        qg1.gain.setValueAtTime(0.18, now);
+        qg1.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+        q1.connect(qg1).connect(audioCtx.destination);
+        q1.start(now);
+        q1.stop(now + 0.135);
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance('Stage one catch confirmed. We have touchdown.');
+        u.rate = 0.96;
+        u.pitch = 0.92;
+        u.volume = 0.9;
+        window.speechSynthesis.speak(u);
+      }
+    } catch (_) {}
+  }
 
   const pointer = { x: -9999, y: -9999, vx: 0, vy: 0, lastX: -9999, lastY: -9999, lastMoveTime: 0 };
 
@@ -491,7 +544,7 @@
     // Anchor at (px, py) where the booster hangs at x = px, y = py (with its upper grid fins caught at y = py - 5)
     ctx.translate(px, py);
 
-    // Subtle telemetry confirmation pulse when Chopsticks lock onto the booster
+    // Subtle telemetry confirmation pulse + 1990s Mission Control Radio HUD caption when Chopsticks lock onto the booster
     if (touchdownPulse > 0.01) {
       const r = 10 + (1 - touchdownPulse) * 28;
       ctx.beginPath();
@@ -499,6 +552,11 @@
       ctx.strokeStyle = `rgba(104, 182, 148, ${(touchdownPulse * 0.6).toFixed(3)})`;
       ctx.lineWidth = 1.1;
       ctx.stroke();
+    }
+    if (chopstickClose > 0.9) {
+      ctx.font = '500 10px "IBM Plex Mono", monospace';
+      ctx.fillStyle = `rgba(104, 182, 148, ${(alpha * 0.92).toFixed(3)})`;
+      ctx.fillText('📻 "WE HAVE TOUCHDOWN"', 12, -4);
     }
 
     // Mechazilla Launch Integration Tower stands to the left of the catch center (x = -15 to -9, y = -20 to +28)
@@ -666,6 +724,7 @@
             drone.touchdownPulse = 1;
             drone.flareProgress = 0.02;
             drone.mode = 'shutdown_flare';
+            playTouchdownRadioCallout();
           }
         } else if (drone.mode === 'shutdown_flare') {
           // 00:16 - 00:18: Caught in chopsticks! Raptor beam collapses into flickering golden-orange shutdown flame puff + white side vent
