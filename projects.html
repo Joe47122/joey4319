@@ -3,86 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Projects — Joseph Komgbenda</title>
-<meta name="description" content="Aerospace engineering projects: ATR 72-600 CFD thesis, GE90/EJ200 CAD modeling, and Carter Fusion 260 conceptual design.">
+<title>Projects — Komgbenda Joseph Oryiman</title>
+<meta name="description" content="Aerospace engineering projects: ATR 72-600 CFD thesis, GE90 and Eurojet EJ200 CAD modeling, Carter Fusion 260 conceptual design, and AVL UAV tasks.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="wordmark" href="index.html">Joseph Komgbenda</a>
-    <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html" aria-current="page">Projects</a>
-      <a href="cad-portfolio.html">CAD Portfolio</a>
-      <a href="resume.html">Resume</a>
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">Home</a>
+        <a class="nav-tab active" href="projects.html" aria-current="page">Projects</a>
+        <a class="nav-tab" href="cad-portfolio.html">CAD Portfolio</a>
+        <a class="nav-tab" href="resume.html">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="mailto:komgbendajoseph6@gmail.com">Let’s Talk ↗</a>
     </nav>
   </div>
-</header>
 
-<div class="page-head">
-  <div class="container">
-    <div class="kicker">Projects</div>
-    <h1 style="max-width: none;">CFD, CAD &amp; conceptual design</h1>
-    <p class="lede">Three projects spanning full-aircraft aerodynamic simulation, detailed
-      turbofan CAD modeling, and early-stage business aircraft configuration work.</p>
+  <div class="page-head">
+    <div class="wrap">
+      <span class="kicker">Engineering Archive</span>
+      <h1>CFD, Propulsion CAD &amp; Aircraft Design</h1>
+      <p class="lede">
+        Full-aircraft aerodynamic load extraction in ANSYS Fluent, detailed turbofan assemblies in CATIA V5,
+        conceptual business-jet sizing, and reproducible AVL / BEM tasks for frontier AI evaluation.
+      </p>
+      <div style="margin-top: 22px;">
+        <div class="filter-bar liquid-glass" role="tablist">
+          <button class="filter-pill active" data-filter="all">All Projects</button>
+          <button class="filter-pill" data-filter="cfd">CFD &amp; Aerodynamics</button>
+          <button class="filter-pill" data-filter="cad">Turbofan &amp; Mechanical CAD</button>
+          <button class="filter-pill" data-filter="design">Aircraft Sizing</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <section class="sec" style="padding-top: 28px;">
+    <div class="wrap">
+      <div class="proj-grid">
+        <article class="proj-card wide liquid-glass" data-cat="cfd">
+          <div class="proj-thumb">
+            <img src="assets/atr-model ansys.png" alt="ATR 72-600 full-aircraft model">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Final-Year Thesis · AFIT Kaduna (2026)</span>
+              <a class="liquid-btn primary sm" href="project-atr72.html">Read Full Case Study ↗</a>
+            </div>
+            <h3>Asymmetric Aerodynamic Structural Analysis of ATR 72-600 Using the Actuator Method</h3>
+            <p>
+              Modelled the complete ATR 72-600 (wing, fuselage, nacelles, empennage) in CATIA V5 and simulated it in ANSYS Fluent
+              with ADMv2 and k-&omega; SST across take-off (116 KCAS, 10&deg; AoA) and OEI climb (115 KCAS, 6&deg; AoA) on a 616,523-element
+              poly-hexcore mesh, verified through a three-level Grid Convergence Index study. Resolved a &minus;6,752 Pa suction peak and
+              35.9 m&sup2;/s&sup2; TKE at the operative wing-nacelle junction in ~3 CPU hours.
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">ANSYS Fluent</span>
+              <span class="glass-chip">ADMv2 + BEM</span>
+              <span class="glass-chip">k-&omega; SST</span>
+              <span class="glass-chip">616,523 Poly-Hexcore Cells</span>
+              <span class="glass-chip">3-Level GCI</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cad">
+          <div class="proj-thumb">
+            <img src="assets/ge90-iso2.jpg" alt="GE90 turbofan CAD model">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Dwello Aerospace · Jun–Aug 2025</span>
+              <a class="liquid-btn sm" href="cad-portfolio.html">View CAD Gallery ↗</a>
+            </div>
+            <h3>GE90 &amp; Eurojet EJ200 Turbofan Assemblies</h3>
+            <p>
+              Detailed CATIA V5 part and assembly models of the high-bypass GE90 and military Eurojet EJ200 turbofan engines,
+              built from engineering drawings and technical references with internal core cutaways.
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">CATIA V5</span>
+              <span class="glass-chip">GE90</span>
+              <span class="glass-chip">Eurojet EJ200</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="design">
+          <div class="proj-thumb">
+            <img src="assets/carter260-iso.jpg" alt="Carter Fusion 260 CAD model">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Group Leader (9 Members, AED 507) · Nov 2025</span>
+              <a class="liquid-btn sm" href="project-carter260.html">Read Case Study ↗</a>
+            </div>
+            <h3>Carter Fusion 260 Business Jet Concept</h3>
+            <p>
+              Led a nine-person team on a 16-passenger, ultra-long-range business jet concept (MTOW 27,295 kg, range 7,860 km);
+              personally owned component-level mass estimation and centre-of-gravity balance analysis across four loading cases
+              (balance coefficients 0.236 to 0.293 MAC).
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">Mass Estimation</span>
+              <span class="glass-chip">CG Balance (0.236–0.293 MAC)</span>
+              <span class="glass-chip">CATIA V5</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cfd">
+          <div class="proj-thumb">
+            <img src="assets/ej200-fan-detail.jpg" alt="Propeller and Aerodynamic Evaluation Tasks">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Turing · Nov 2026</span>
+              <a class="liquid-btn sm" href="resume.html">See Experience ↗</a>
+            </div>
+            <h3>Tailless UAV AVL &amp; BEM Propeller Matching Tasks</h3>
+            <p>
+              Authored reproducible aerospace engineering benchmarks for frontier AI evaluation: a tailless flying-wing UAV analysed
+              in AVL with section polar data (delivered as STEP AP242), plus multi-operating-point BEM propeller-motor matching.
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">AVL</span>
+              <span class="glass-chip">XFOIL / NeuralFoil</span>
+              <span class="glass-chip">BEM</span>
+              <span class="glass-chip">STEP AP242</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cad">
+          <div class="proj-thumb">
+            <img src="assets/bike_pedal_assembly_1.jpg" alt="FreeCAD Flat Bike Pedal Assembly">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Parametric Mechanical CAD · FreeCAD</span>
+              <a class="liquid-btn sm" href="cad-portfolio.html#side-quests">View Drawings &amp; Renders ↗</a>
+            </div>
+            <h3>Parametric Bike Brace &amp; Bearing-Mounted Flat Pedal</h3>
+            <p>
+              Spreadsheet-driven PartDesign models and A3 ISO 2768-m technical drawings in FreeCAD: a 6061-T6 two-bore split clamp
+              and a 20-insert stainless-steel bearing-mounted pedal assembly.
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">FreeCAD</span>
+              <span class="glass-chip">Spreadsheet Parametric</span>
+              <span class="glass-chip">TechDraw ISO 2768-m</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
 </div>
 
-<div class="container">
-  <div class="project-grid">
-
-    <div class="project-card">
-    <img src="assets/atr-model ansys.png" alt="atr model">
-      <div class="card-body">
-        <div class="tag">Final year thesis — CFD</div>
-        <h3>ATR 72-600 propeller slipstream aerodynamics</h3>
-        <p>Full-aircraft Actuator Disk Method simulation under symmetric take-off and
-          one-engine-inoperative conditions, coupled to a one-way FSI structural analysis.
-          &minus;6,752 Pa peak suction, 35.9 m&sup2;/s&sup2; TKE, converged in ~3 CPU hours.</p>
-        <a class="card-link" href="project-atr72.html">View project &rarr;</a>
-      </div>
-    </div>
-
-    <div class="project-card">
-      <div class="thumb"><img src="assets/ge90-iso2.jpg" alt="GE90 turbofan CAD model"></div>
-      <div class="card-body">
-        <div class="tag">CAD engineering — Dwello Aerospace</div>
-        <h3>GE90 &amp; Eurojet EJ200 turbofan models</h3>
-        <p>Detailed CATIA V5 part and assembly models of the GE90 and EJ200 turbofan engines,
-          built from engineering drawings and presented during technical review sessions.</p>
-        <a class="card-link" href="cad-portfolio.html">View project &rarr;</a>
-      </div>
-    </div>
-
-    <div class="project-card">
-      <div class="thumb"><img src="assets/carter260-iso.jpg" alt="Carter Fusion 260 CAD model"></div>
-      <div class="card-body">
-        <div class="tag">Conceptual design — 9-person team, group lead</div>
-        <h3>Carter Fusion 260 business aircraft</h3>
-        <p>A synthesis of the Bombardier Challenger 650 and Gulfstream G280 into a higher-capacity,
-          ultra-long-range business jet. MTOW 27,295 kg, range 7,860 km, 20 occupants.</p>
-        <a class="card-link" href="project-carter260.html">View project &rarr;</a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>Joseph Komgbenda &mdash; Aerospace Engineer, Abuja, Nigeria</p>
-    <div class="footer-links">
-      <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
-      <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </div>
-</footer>
-
+<script src="app.js"></script>
 </body>
 </html>

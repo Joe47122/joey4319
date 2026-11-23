@@ -3,190 +3,263 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CAD Portfolio — Joseph Komgbenda</title>
-<meta name="description" content="CATIA V5 turbofan engine models: GE90 and Eurojet EJ200, built during a CAD engineering internship at Dwello Aerospace.">
+<title>CAD Portfolio — Komgbenda Joseph Oryiman</title>
+<meta name="description" content="CATIA V5 and FreeCAD assemblies: GE90 high-bypass turbofan, Eurojet EJ200 military turbofan, and spreadsheet-driven parametric mechanical parts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="wordmark" href="index.html">Joseph Komgbenda</a>
-    <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="cad-portfolio.html" aria-current="page">CAD Portfolio</a>
-      <a href="resume.html">Resume</a>
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">Home</a>
+        <a class="nav-tab" href="projects.html">Projects</a>
+        <a class="nav-tab active" href="cad-portfolio.html" aria-current="page">CAD Portfolio</a>
+        <a class="nav-tab" href="resume.html">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="mailto:komgbendajoseph6@gmail.com">Let’s Talk ↗</a>
     </nav>
   </div>
-</header>
 
-<div class="page-head">
-  <div class="container">
-    <div class="kicker">CAD engineering &middot; Dwello Aerospace</div>
-    <h1 style="max-width: 18ch;">Turbofan modeling in CATIA V5</h1>
-    <p class="lede">Remote CAD internship building detailed part and assembly models of the
-      GE90 and Eurojet EJ200 turbofan engines from engineering drawings and reference material,
-      presented during technical review sessions.</p>
+  <div class="page-head">
+    <div class="wrap">
+      <span class="kicker">CATIA V5 &middot; SolidWorks &middot; FreeCAD &middot; CadQuery</span>
+      <h1>Propulsion &amp; Parametric CAD Gallery</h1>
+      <p class="lede">
+        Multi-stage turbofan engine assemblies built during my remote CAD engineering internship at
+        <b>Dwello Aerospace</b> (Jun–Aug 2025), alongside spreadsheet-driven parametric components and
+        ISO 2768-m engineering drawings. Click any plate to inspect full-screen.
+      </p>
+      <div style="margin-top: 22px;">
+        <div class="filter-bar liquid-glass" role="tablist">
+          <button class="filter-pill active" data-filter="all">All Assemblies</button>
+          <button class="filter-pill" data-filter="ge90">GE90 Turbofan</button>
+          <button class="filter-pill" data-filter="ej200">Eurojet EJ200</button>
+          <button class="filter-pill" data-filter="parametric">Parametric FreeCAD</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <section class="sec" data-cat="ge90" id="ge90">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Dwello Aerospace · CATIA V5</span>
+          <h2>GE90 High-Bypass Turbofan</h2>
+        </div>
+        <span class="glass-chip">Part &amp; Assembly Modelling</span>
+      </div>
+      <p>
+        Full assembly model built from reference geometry and engineering drawings, covering the swept fan stage,
+        spinner cone, core flowpath, and nacelle inlet/exhaust surfaces.
+      </p>
+
+      <div class="gallery">
+        <figure class="wide liquid-glass">
+          <img src="assets/ge90-iso.jpg" alt="GE90 turbofan CAD model, isometric view, full engine and nacelle" loading="lazy">
+          <figcaption>
+            <span>Fig. 01 &mdash; Full assembly, isometric view</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ge90-front.jpg" alt="GE90 turbofan CAD model, front view of fan blades" loading="lazy">
+          <figcaption>
+            <span>Fig. 02 &mdash; Swept fan stage, front view</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ge90-inter.jpg" alt="GE90 turbofan CAD model, interior detail showing fan and core" loading="lazy">
+          <figcaption>
+            <span>Fig. 03 &mdash; Fan &amp; core interior detail</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ge90-iso2.jpg" alt="GE90 turbofan CAD model, alternate isometric angle" loading="lazy">
+          <figcaption>
+            <span>Fig. 04 &mdash; Full assembly, alternate isometric angle</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ge90-top.jpg" alt="GE90 turbofan CAD model, nacelle nose cone and inlet" loading="lazy">
+          <figcaption>
+            <span>Fig. 05 &mdash; Nacelle inlet &amp; spinner contour</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" data-cat="ej200" id="ej200">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Dwello Aerospace · CATIA V5</span>
+          <h2>Eurojet EJ200 Military Turbofan</h2>
+        </div>
+        <span class="glass-chip">Cutaway &amp; Nozzle Kinematics</span>
+      </div>
+      <p>
+        CATIA V5 part and assembly model of the Eurofighter Typhoon’s EJ200 low-bypass afterburning turbofan,
+        including a multi-stage compressor cutaway and convergent-divergent nozzle actuation linkage rings.
+      </p>
+
+      <div class="gallery">
+        <figure class="wide liquid-glass">
+          <img src="assets/ej200-iso.jpg" alt="EJ200 turbofan CAD model, isometric view, full engine" loading="lazy">
+          <figcaption>
+            <span>Fig. 06 &mdash; Full EJ200 assembly, isometric view</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ej200-cutaway.jpg" alt="EJ200 turbofan CAD model, cutaway showing fan and core" loading="lazy">
+          <figcaption>
+            <span>Fig. 07 &mdash; Compressor &amp; nozzle linkage cutaway</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ej200-fan-detail.jpg" alt="EJ200 turbofan CAD model, fan stage detail" loading="lazy">
+          <figcaption>
+            <span>Fig. 08 &mdash; Low-pressure compressor &amp; fan stage detail</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ej200-side.jpg" alt="EJ200 turbofan CAD model, side profile" loading="lazy">
+          <figcaption>
+            <span>Fig. 09 &mdash; Full side elevation profile</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/ej200-rear-detail.jpg" alt="EJ200 turbofan CAD model, rear casing detail" loading="lazy">
+          <figcaption>
+            <span>Fig. 10 &mdash; Rear afterburner casing &amp; petal actuator detail</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" data-cat="parametric" id="side-quests">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Parametric Mechanical CAD · FreeCAD</span>
+          <h2>Two-Bore Split Clamp (Bike Brace)</h2>
+        </div>
+        <a class="liquid-btn sm" href="assets/Bike brace 1.pdf" target="_blank" rel="noopener">Open 2D Drawing (PDF) ↗</a>
+      </div>
+      <div class="two-col" style="margin-bottom: 24px;">
+        <div>
+          <p>
+            Orthogonal two-bore split clamp (28 mm vertical bore R14 and 23 mm horizontal bore R11.5) within a
+            103 &times; 50 &times; 44 mm envelope with a central weight-saving pocket.
+          </p>
+          <p style="margin-bottom:0;">
+            <b>Spreadsheet-driven parametric rebuild:</b> All critical dimensions (<span class="mono">bore_large_d</span>,
+            <span class="mono">bore_small_d</span>, slot width, bolt spacing, wall thickness) live in a FreeCAD spreadsheet
+            so changing a single cell regenerates the entire PartDesign solid. Designed for 6061-T6 CNC billet machining.
+          </p>
+        </div>
+        <div class="glass-panel liquid-glass">
+          <span class="sec-tag">2D Technical Drawing</span>
+          <h3>Dimensioned Orthographic Sheet</h3>
+          <p>Built directly from the dimensioned orthographic PDF specification (all dimensions in mm).</p>
+          <a class="liquid-btn primary sm" href="assets/Bike brace 1.pdf" target="_blank" rel="noopener">View Technical Drawing PDF ↗</a>
+        </div>
+      </div>
+
+      <div class="gallery">
+        <figure class="liquid-glass">
+          <img src="assets/bike brace.jpg" alt="FreeCAD render of the bike brace clamp, isometric view" loading="lazy">
+          <figcaption>
+            <span>Fig. 11 &mdash; Two-bore split clamp, isometric render</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/side view 1.jpg" alt="FreeCAD render of the bike brace clamp, side view" loading="lazy">
+          <figcaption>
+            <span>Fig. 12 &mdash; Side profile showing weight-saving pocket</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" data-cat="parametric" id="bike-pedal">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Parametric Assembly &amp; TechDraw · FreeCAD</span>
+          <h2>Bearing-Mounted Flat Bike Pedal Assembly</h2>
+        </div>
+        <span class="glass-chip">ISO 2768-m · 1.4301 Stainless</span>
+      </div>
+      <p>
+        Full multi-part FreeCAD assembly featuring a pocketed platform with 20 flush M4 heat-set traction-pin inserts,
+        a lathe-turned spindle supported on dual bearings, bearing seat, and lock nut. Both the 3D assembly and the
+        A3 1:1 exploded production drawing derive from a single spreadsheet-parameterised PartDesign source.
+      </p>
+
+      <div class="gallery">
+        <figure class="liquid-glass">
+          <img src="assets/bike_pedal_assembly_1.jpg" alt="Rendered flat bike pedal assembly" loading="lazy">
+          <figcaption>
+            <span>Fig. 13 &mdash; Assembled flat pedal &amp; threaded spindle</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="liquid-glass">
+          <img src="assets/other_side.jpg" alt="Rendered flat bike pedal opposite side" loading="lazy">
+          <figcaption>
+            <span>Fig. 14 &mdash; Opposite face &amp; M4 insert pattern</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+        <figure class="wide liquid-glass">
+          <img src="assets/bike_pedal_drawing.png" alt="Exploded component drawing of the bike pedal (A3, 1:1)" loading="lazy">
+          <figcaption>
+            <span>Fig. 15 &mdash; Exploded component &amp; BOM drawing (A3, scale 1:1, ISO 2768-m)</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
 </div>
 
-<section class="section">
-  <div class="container">
-    <h2>GE90 turbofan</h2>
-    <p>Full assembly model built from reference geometry, covering the fan stage, spinner and
-      nacelle inlet/exhaust surfaces.</p>
-
-    <div class="gallery">
-      <figure class="wide">
-        <img src="assets/ge90-iso.jpg" alt="GE90 turbofan CAD model, isometric view, full engine and nacelle" loading="lazy">
-        <figcaption>Full assembly &mdash; isometric</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ge90-front.jpg" alt="GE90 turbofan CAD model, front view of fan blades" loading="lazy">
-        <figcaption>Fan stage &mdash; front view</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ge90-inter.jpg" alt="GE90 turbofan CAD model, interior detail showing fan and core" loading="lazy">
-        <figcaption>Fan and core &mdash; interior detail</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ge90-iso2.jpg" alt="GE90 turbofan CAD model, alternate isometric angle" loading="lazy">
-        <figcaption>Full assembly &mdash; alternate angle</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ge90-top.jpg" alt="GE90 turbofan CAD model, nacelle nose cone and inlet" loading="lazy">
-        <figcaption>Nacelle inlet &amp; spinner</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Eurojet EJ200 turbofan</h2>
-    <p>CATIA V5 part and assembly model of the EJ200 military turbofan &mdash; the Eurofighter
-      Typhoon engine &mdash; built alongside the GE90 model during the Dwello Aerospace
-      internship, including a fan-stage cutaway to show the internal core.</p>
-    <div class="gallery">
-      <figure class="wide">
-        <img src="assets/ej200-iso.jpg" alt="EJ200 turbofan CAD model, isometric view, full engine" loading="lazy">
-        <figcaption>Full assembly &mdash; isometric</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ej200-cutaway.jpg" alt="EJ200 turbofan CAD model, cutaway showing fan and core" loading="lazy">
-        <figcaption>Fan &amp; core &mdash; cutaway</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ej200-fan-detail.jpg" alt="EJ200 turbofan CAD model, fan stage detail" loading="lazy">
-        <figcaption>Fan stage detail</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ej200-side.jpg" alt="EJ200 turbofan CAD model, side profile" loading="lazy">
-        <figcaption>Side profile</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ej200-rear-detail.jpg" alt="EJ200 turbofan CAD model, rear casing detail" loading="lazy">
-        <figcaption>Rear casing detail</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="side-quests">
-  <div class="container">
-   <h2>Side quests &middot; Miscellaneous projects in FreeCAD<h2>
-    <h3>Bike brace (two-bore split clamp)</h3>
-    <p>A bicycle clamp bracket that holds two tubes at right angles to each other, modelled
-      in FreeCAD from a dimensioned drawing. One end has a 28 mm bore (R14) that grips a tube
-      vertically, and the other has a 23 mm bore (R11.5) set horizontally for a handlebar-sized
-      tube. Each bore is split by a slot and closed with pinch bolts. Parts like this are used
-      to mount accessories, lights or extension bars, or to link frame and handlebar tubes.
-      The envelope is about 103 mm long, 50 mm tall and 44 mm wide, with a pocket through the
-      body to save weight.</p>
-    <p><strong>Parametric rebuild:</strong> the key dimensions live in a FreeCAD spreadsheet
-      with aliases such as bore_large_d, bore_small_d, length, height and width, plus slot
-      width, bolt size and spacing, and wall thickness. A PartDesign body references them in
-      constrained sketches that are padded, pocketed and filleted, with the bolt holes made as
-      hole features. Changing a spreadsheet value rebuilds the whole part, so it adapts easily
-      to other tube diameters.</p>
-    <p><strong>Fabrication:</strong> CNC machined from 6061-T6 aluminium billet, with the slots
-      cut by milling or wire EDM and the bores finished by reaming, then anodised. Socket-head
-      steel bolts do the clamping. A 3D-printed PETG or nylon prototype is useful for checking
-      fit before cutting metal.</p>
-
-    <div class="gallery">
-      <figure class="wide">
-        <img src="assets/bike brace.jpg" alt="FreeCAD render of the bike brace clamp, isometric view showing both bores and pinch bolts" loading="lazy">
-        <figcaption>Isometric view</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/side view 1.jpg" alt="FreeCAD render of the bike brace clamp, side view showing the weight-saving pocket" loading="lazy">
-        <figcaption>Side view</figcaption>
-      </figure>
-    </div>
-        <h3>2D drawing</h3>
-    <p>Dimensioned orthographic drawing the model was built from (dimensions in mm).</p>
-    <object data="assets/Bike_brace_1.pdf" type="application/pdf" width="100%" height="520" aria-label="2D drawing of the bike brace">
-      <p>click here to view the 2d techdraw <a href="Bike brace 1.pdf" target="_blank" rel="noopener">Open the 2D drawing (PDF)</a>.</p>
-    </object>
-    <p><a href="assets/Bike_brace_1.pdf" target="assets/bike brace 1.pdf" rel="noopener">Open the drawing in a new tab (PDF)</a></p>
-  </div>
-</section>
-
-<section class="section" id="bike-pedal" style="border-bottom: none;">
-  <div class="container">
-    <div class="kicker">Side quests &middot; Miscellaneous projects in FreeCAD</div>
-    <h2>Flat bike pedal (bearing-mounted assembly)</h2>
-    <p>A flat-platform bicycle pedal modelled as a full assembly in FreeCAD. The body is a wide
-      platform with three weight-saving pockets and a ring of holes on the top face. A threaded
-      spindle runs through the body on two bearings, held by a bearing seat and a lock nut, and
-      the threaded end screws into the crank arm. Flat pedals like this are used on mountain,
-      BMX and everyday bikes, where the rider needs a large, stable foot platform. The drawing
-      calls for 20 heat-set M4 inserts, set flush with the surface, to hold traction pins or
-      cover plates on the top and bottom faces.</p>
-    <p><strong>Parametric rebuild:</strong> platform length, width and thickness, pocket sizes,
-      the hole pattern, spindle diameter, bearing seat diameters and the insert hole size sit in
-      a FreeCAD spreadsheet as named aliases. The body is a PartDesign part built from
-      constrained sketches, with the pockets and insert holes patterned so that changing one
-      value rebuilds the whole pedal. The spindle, bearings and nut are separate parts brought
-      together in an assembly, and the exploded view and component drawing (A3, scale 1:1,
-      ISO 2768-m) come from the same model.</p>
-    <p><strong>Fabrication:</strong> the drawing specifies stainless steel 1.4301 (304), so the
-      production route is CNC machining from billet, with the bearing seat bored and reamed to
-      size and the spindle turned on a lathe. For a quick fit-check prototype, the body can be
-      3D printed in nylon or PETG, with the inserts pressed in using a soldering iron.</p>
-
-    <div class="gallery">
-      <figure class="wide">
-        <img src="assets/bike_pedal_assembly_1.jpg" alt="Rendered flat bike pedal on a desk, showing the pocketed platform and threaded spindle" loading="lazy">
-        <figcaption>Assembly &mdash; rendered view</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/other_side.jpg" alt="Rendered flat bike pedal from the opposite side, showing the insert holes and spindle" loading="lazy">
-        <figcaption>Assembly &mdash; opposite side</figcaption>
-      </figure>
-      <figure class="wide">
-        <img src="assets/bike_pedal_drawing.png" alt="Exploded component drawing of the bike pedal showing spindle, bearings, nut and 20 heat-set inserts" loading="lazy">
-        <figcaption>Exploded assembly drawing (A3, 1:1)</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-     
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>Joseph Komgbenda &mdash; Aerospace Engineer, Abuja, Nigeria</p>
-    <div class="footer-links">
-      <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
-      <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </div>
-</footer>
-
+<script src="app.js"></script>
 </body>
 </html>

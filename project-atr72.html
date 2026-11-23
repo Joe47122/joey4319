@@ -4,144 +4,189 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ATR 72-600 Propeller Slipstream CFD — Komgbenda Joseph Oryiman</title>
-<meta name="description" content="Full-aircraft CFD study of ATR 72-600 propeller slipstream aerodynamics under one-engine-inoperative conditions using the Actuator Disk Method.">
+<meta name="description" content="Full-aircraft CFD study of ATR 72-600 propeller slipstream aerodynamics under take-off and one-engine-inoperative conditions using ADMv2 and a 3-level GCI study.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="wordmark" href="index.html">Komgbenda J. Oryiman</a>
-    <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html" aria-current="page">Projects</a>
-      <a href="cad-portfolio.html">CAD Portfolio</a>
-      <a href="resume.html">Resume</a>
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">Home</a>
+        <a class="nav-tab active" href="projects.html" aria-current="page">Projects</a>
+        <a class="nav-tab" href="cad-portfolio.html">CAD Portfolio</a>
+        <a class="nav-tab" href="resume.html">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="mailto:komgbendajoseph6@gmail.com">Let’s Talk ↗</a>
     </nav>
   </div>
-</header>
 
-<div class="page-head">
-  <div class="container">
-    <div class="kicker">Final year thesis &middot; AFIT Kaduna, 2026</div>
-    <h1 style="max-width: 20ch;">Asymmetric aerodynamic-structural analysis of the ATR 72-600 using the actuator disk method</h1>
-    <p class="lede">A full-aircraft CFD study of what happens to the airframe when one engine
-      fails during a turboprop climb &mdash; run at a fraction of the computational cost of prior
-      high-fidelity methods.</p>
-    <p style="margin-top: 18px; font-size: 0.9rem;">
-      <span class="status-note">Manuscript in preparation for journal submission</span>
-    </p>
+  <div class="page-head">
+    <div class="wrap">
+      <span class="kicker">Final-Year Research Thesis &middot; AFIT Kaduna, 2026</span>
+      <h1>Asymmetric Aerodynamic Structural Analysis of ATR 72-600 Using the Actuator Method</h1>
+      <p class="lede">
+        A full-aircraft steady RANS CFD study of propeller slipstream interaction across symmetric take-off
+        (116 KCAS, 10&deg; AoA) and one-engine-inoperative climb (115 KCAS, 6&deg; AoA), verified through a
+        three-level Grid Convergence Index (GCI) study at a fraction of full-blade computational cost.
+      </p>
+      <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <span class="status-note"><span class="pulse-dot"></span> First author · Journal manuscript in preparation</span>
+        <a class="liquid-btn sm" href="projects.html">&larr; Back to Projects</a>
+      </div>
+    </div>
   </div>
+
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">&minus;6,752<span>Pa</span></div>
+          <span class="telemetry-hint">OEI · 115 KCAS</span>
+        </div>
+        <div class="stat-lbl">Suction peak at the operative engine’s wing-nacelle junction under OEI climb</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">35.9<span>m&sup2;/s&sup2;</span></div>
+          <span class="telemetry-hint">k-&omega; SST</span>
+        </div>
+        <div class="stat-lbl">Peak turbulent kinetic energy at the operative nacelle-wing junction</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">616,523<span>Cells</span></div>
+          <span class="telemetry-hint">3-Level GCI &lt; 5%</span>
+        </div>
+        <div class="stat-lbl">Poly-hexcore mesh (2,199,109 nodes) verified via three-level grid-independence study</div>
+      </div>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">~3<span>CPU hrs</span></div>
+          <span class="telemetry-hint">vs. 170–3,100h</span>
+        </div>
+        <div class="stat-lbl">Total convergence time, demonstrating ADMv2 as a low-cost alternative to full-blade CFD</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec">
+    <div class="wrap two-col">
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">01 · Problem &amp; Scope</span>
+        <h2>Why Actuator-Disk Slipstream CFD Matters</h2>
+        <p>
+          Turboprop aircraft experience strongly asymmetric propeller slipstream wash during critical flight phases
+          such as one-engine-inoperative (OEI) climb. Characterising these aerodynamic loads across the wing-nacelle
+          junction is essential for structural sizing, yet fully resolved sliding-mesh rotor simulations require
+          hundreds to thousands of CPU hours.
+        </p>
+        <p style="margin-bottom:0;">
+          This thesis modelled the complete ATR 72-600 airframe (wing, fuselage, nacelles, and empennage) in
+          <b>CATIA V5</b> and simulated it in <b>ANSYS Fluent</b> using the steady Actuator Disk Method (ADMv2) with
+          blade element momentum (BEM) source terms. The scope focused on high-fidelity aerodynamic load extraction
+          and rigorous three-level Grid Convergence Index (GCI) verification; no separate structural FEA solve was performed.
+        </p>
+      </div>
+
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">02 · Solver &amp; Mesh Architecture</span>
+        <h2>Methodology Summary</h2>
+        <ul class="result-list">
+          <li><span class="k">Solver &amp; Turbulence</span><span class="v">ANSYS Fluent · Steady RANS with k-&omega; SST closure</span></li>
+          <li><span class="k">Propeller Model</span><span class="v">ADMv2 actuator disk with BEM-derived axial &amp; swirl source terms</span></li>
+          <li><span class="k">CAD Geometry</span><span class="v">Complete ATR 72-600 (wing, fuselage, nacelles, empennage) in CATIA V5</span></li>
+          <li><span class="k">Flight Cases</span><span class="v">Take-off (116 KCAS, 10&deg; AoA) &amp; OEI climb (115 KCAS, 6&deg; AoA)</span></li>
+          <li><span class="k">Mesh &amp; GCI</span><span class="v">616,523 poly-hexcore cells (2,199,109 nodes), 3-level GCI verified</span></li>
+          <li><span class="k">Scope</span><span class="v">Aerodynamic load &amp; pressure distribution extraction across full airframe</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="gallery" style="margin-top:0; margin-bottom:32px;">
+        <figure class="wide liquid-glass">
+          <img src="assets/atr-model ansys.png" alt="ATR 72-600 full-aircraft geometry in CATIA V5 and ANSYS">
+          <figcaption>
+            <span>Fig. 01 &mdash; Complete ATR 72-600 wing-fuselage-nacelle-empennage geometry with actuator disks</span>
+            <span class="telemetry-hint">Click to enlarge</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="two-col">
+        <div class="glass-panel liquid-glass">
+          <span class="sec-tag">Case A · 116 KCAS, 10&deg; AoA</span>
+          <h3>Symmetric Take-Off Baseline</h3>
+          <p style="margin-bottom:0;">
+            With both propellers operating at take-off thrust, the slipstream produces a mirrored suction and
+            pressure-recovery envelope across each wing-nacelle junction, with a leading-edge stagnation peak near
+            3,300 Pa and accelerated local slipstream velocity (~99 m/s vs. 59.1 m/s freestream).
+          </p>
+        </div>
+
+        <div class="glass-panel liquid-glass">
+          <span class="sec-tag">Case B · 115 KCAS, 6&deg; AoA</span>
+          <h3>One-Engine-Inoperative (OEI) Climb</h3>
+          <p style="margin-bottom:0;">
+            With the failed engine feathered, severe aerodynamic asymmetry develops across the span: the operative
+            wing-nacelle junction reaches a suction peak of <b>&minus;6,752 Pa</b> and turbulent kinetic energy of
+            <b>35.9 m&sup2;/s&sup2;</b>, while the opposite wing remains in clean, unaccelerated freestream flow.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap two-col">
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">03 · Computational Benchmark</span>
+        <h2>Why ~3 CPU Hours Matters</h2>
+        <p style="margin-bottom:0;">
+          Converging the 616k-cell full-aircraft model in roughly 3 CPU hours demonstrates that BEM-informed
+          actuator-disk modelling captures asymmetric OEI junction loads on standard university compute hardware,
+          compared against 170 CPU hours for 42M-cell steady ADM studies (Yang et al., 2024) and thousands of
+          CPU hours for unsteady sliding-mesh simulations (Zhao et al., 2022).
+        </p>
+      </div>
+
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">04 · Publication Status</span>
+        <h2>Manuscript &amp; Supervision</h2>
+        <p>
+          First author of a journal manuscript in preparation, co-authored with thesis supervisor
+          <b>Sqn Ldr S.O. Sanusi</b> (Department of Aerospace Engineering, AFIT Kaduna).
+        </p>
+        <a class="liquid-btn primary sm" href="mailto:komgbendajoseph6@gmail.com">Request Methodology Details ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
 </div>
 
-<section class="section">
-  <div class="container two-col">
-    <div>
-      <h2>The problem</h2>
-      <p>Turboprop aircraft undergo complex propeller slipstream interactions during critical
-        flight phases such as one-engine-inoperative (OEI) conditions, and characterizing these
-        interactions accurately matters for structural design. High-fidelity unsteady studies can
-        resolve this in detail, but the computational cost &mdash; thousands of CPU hours &mdash;
-        is often impractical for structural engineers who need aerodynamic load data quickly.</p>
-      <p>This project applies the steady-state Actuator Disk Method (ADMv2), a formulation
-        previously validated on partial or simplified geometries, to a full production airframe:
-        the ATR 72-600 wing-fuselage-nacelle-empennage assembly, under both symmetric
-        take-off and OEI climb.</p>
-    </div>
-    <div>
-      <h2>Method, in brief</h2>
-      <ul class="result-list">
-        <li><span class="k">Solver</span><span class="v">ANSYS Fluent, RANS with k&minus;&omega; SST turbulence closure</span></li>
-        <li><span class="k">Propeller model</span><span class="v">ADMv2 &mdash; total-pressure boundary condition at the disk face, derived from BEM theory</span></li>
-        <li><span class="k">Geometry</span><span class="v">Full wing-fuselage-nacelle-empennage assembly, built in CATIA V5</span></li>
-        <li><span class="k">Mesh</span><span class="v">Poly-hexcore, 616,523 elements / 2,199,109 nodes, grid-independence verified (GCI &lt; 5%)</span></li>
-        <li><span class="k">Structural link</span><span class="v">One-way FSI to ANSYS Mechanical for load transfer</span></li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Key results</h2>
-    <p class="lede">Two flight conditions were simulated: symmetric take-off (both engines at
-      full power) and one-engine-inoperative climb (one disk feathered, zero thrust).</p>
-
-    <div class="stat-strip" style="margin-top: 30px;">
-      <div class="stat">
-        <span class="value">&minus;6,752 Pa</span>
-        <span class="label">Peak upper-surface suction, operative wing root under OEI</span>
-      </div>
-      <div class="stat">
-        <span class="value">35.9 m&sup2;/s&sup2;</span>
-        <span class="label">Peak turbulence kinetic energy at the operative nacelle-wing junction</span>
-      </div>
-      <div class="stat">
-        <span class="value">~99 m/s</span>
-        <span class="label">Local slipstream velocity on the operative side vs. 59.1 m/s freestream</span>
-      </div>
-    </div>
-
-    <div class="two-col" style="margin-top: 40px;">
-      <div>
-        <h3>Symmetric take-off</h3>
-        <p>Both engines at full power produced a mirrored suction and pressure-recovery pattern
-          at each engine-wing junction, with a peak leading-edge stagnation pressure of about
-          3,300 Pa &mdash; a stable, symmetric baseline before the failure case.</p>
-      </div>
-      <div>
-        <h3>One-engine-inoperative</h3>
-        <p>With one disk feathered, the asymmetry propagates across the full airframe: the
-          operative wing root carries severe localized suction while the opposite wing shows a
-          clean, undisturbed pressure gradient &mdash; the direct aerodynamic source of the
-          rolling moment and wing-root torsion the central attachment box must carry.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Why the efficiency matters</h2>
-    <p class="lede">The full-aircraft simulation converged for both flight conditions in
-      approximately 3 CPU hours. Prior steady-ADM validation work (Yang et al., 2024) required
-      about 170 CPU hours on a 42-million-cell grid, and fully resolved unsteady simulation
-      (Zhao et al., 2022) is understood to need several thousand CPU hours for a comparable
-      domain. The result is a workflow that delivers structurally relevant, asymmetric
-      aerodynamic load data on hardware and license tiers a typical university aerospace
-      department can actually access.</p>
-    <ul class="result-list" style="margin-top: 24px;">
-      <li><span class="k">This study</span><span class="v">~3 CPU hours, full-aircraft geometry, both flight conditions</span></li>
-      <li><span class="k">Yang et al. (2024)</span><span class="v">~170 CPU hours, 42M-cell grid, partial geometry</span></li>
-      <li><span class="k">Zhao et al. (2022)</span><span class="v">Several thousand CPU hours, unsteady URANS sliding mesh</span></li>
-    </ul>
-  </div>
-</section>
-
-<section class="section" style="border-bottom: none;">
-  <div class="container">
-    <h2>Status &amp; supervision</h2>
-    <p>Supervised by Sqn Ldr S.O. Sanusi, Department of Aerospace Engineering, AFIT Kaduna.
-      The full manuscript is in preparation for journal submission and isn't posted publicly
-      here while that's pending &mdash; get in touch if you'd like more detail on the
-      methodology or results.</p>
-    <p style="margin-top: 24px;"><a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a></p>
-  </div>
-</section>
-
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer, Abuja, Nigeria</p>
-    <div class="footer-links">
-      <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
-      <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </div>
-</footer>
-
+<script src="app.js"></script>
 </body>
 </html>

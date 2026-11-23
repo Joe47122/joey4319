@@ -3,82 +3,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Resume — Joseph Komgbenda</title>
-<meta name="description" content="Resume for Joseph Komgbenda, Aerospace Engineering graduate, AFIT Kaduna.">
+<title>Resume — Komgbenda Joseph Oryiman</title>
+<meta name="description" content="Curriculum Vitae of Komgbenda Joseph Oryiman: Aerospace Engineer specialising in CFD, Aerodynamic Analysis, CATIA V5 CAD, and AI Model Evaluation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="wordmark" href="index.html">Joseph Komgbenda</a>
-    <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="cad-portfolio.html">CAD Portfolio</a>
-      <a href="resume.html" aria-current="page">Resume</a>
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">Home</a>
+        <a class="nav-tab" href="projects.html">Projects</a>
+        <a class="nav-tab" href="cad-portfolio.html">CAD Portfolio</a>
+        <a class="nav-tab active" href="resume.html" aria-current="page">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="assets/resume.pdf" download>Download PDF &darr;</a>
     </nav>
   </div>
-</header>
 
-<div class="page-head">
-  <div class="container">
-    <div class="kicker">Resume</div>
-    <h1 style="max-width: none;">Aerospace Engineering graduate, AFIT Kaduna</h1>
-    <p class="lede">B.Eng. Aerospace Engineering, CGPA 3.89/5.00. Nine months of aircraft
-      maintenance experience with the Nigerian Air Force, plus CAD and CFD project work.</p>
+  <div class="page-head">
+    <div class="wrap">
+      <span class="kicker">Curriculum Vitae &middot; Abuja, Nigeria (Remote)</span>
+      <h1>Komgbenda Joseph Oryiman</h1>
+      <p class="lede">
+        Aerospace engineer specialising in applied aerodynamics, computational fluid dynamics, and aircraft design
+        analysis. Brings subject-matter expertise to AI model evaluation, building engineering design tasks that test
+        and train frontier AI models against real aerodynamic and stability requirements.
+      </p>
 
-    <div class="resume-panel">
-      <div>
-        <div style="font-weight: 600; margin-bottom: 4px;">Full resume (PDF)</div>
-        <div class="filename">resume.pdf</div>
+      <div class="glass-panel liquid-glass" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px;">
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;">Official Resume PDF</div>
+          <div class="mono" style="font-size: 0.8rem; color: var(--muted);">Abuja, Nigeria (remote) &middot; +234 701 752 2777 &middot; komgbendajoseph6@gmail.com</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a class="liquid-btn primary" href="assets/resume.pdf" download>Download Resume (PDF) &darr;</a>
+          <a class="liquid-btn" href="assets/resume.pdf" target="_blank" rel="noopener">Open in Browser ↗</a>
+        </div>
       </div>
-      <a class="btn btn-primary" href="assets/resume.pdf" download>Download resume</a>
     </div>
   </div>
-</div>
 
-<section class="section">
-  <div class="container two-col">
-    <div>
-      <h2>Highlights</h2>
-      <ul class="result-list">
-        <li><span class="k">Education</span><span class="v">B.Eng. Aerospace Engineering, AFIT Kaduna &mdash; , graduated July 2026</span></li>
-        <li><span class="k">Maintenance</span><span class="v">9 months industrial training, Nigerian Air Force &mdash; 307 Executive Airlift Group &amp; 431 Engineering Group</span></li>
-        <li><span class="k">CAD/CAE</span><span class="v">CATIA V5, SolidWorks, ANSYS (Workbench, Fluent), SpaceClaim, FreeCAD</span></li>
-        <li><span class="k">Programming</span><span class="v">Python, Linux</span></li>
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Technical Stack</span>
+          <h2>Technical Skills</h2>
+        </div>
+      </div>
+
+      <ul class="result-list liquid-glass">
+        <li>
+          <span class="k">CFD &amp; Aerodynamics</span>
+          <span class="v">ANSYS Fluent (steady RANS, k-&omega; SST), actuator-disk propeller modelling (ADMv2), take-off and OEI case setup, load post-processing</span>
+        </li>
+        <li>
+          <span class="k">Low-Order Design</span>
+          <span class="v">AVL, XFOIL, NeuralFoil, blade element momentum (BEM) analysis</span>
+        </li>
+        <li>
+          <span class="k">Meshing &amp; Verification</span>
+          <span class="v">Fluent Meshing (poly-hexcore), SpaceClaim, grid independence and Grid Convergence Index (GCI), convergence diagnosis</span>
+        </li>
+        <li>
+          <span class="k">CAD Modelling</span>
+          <span class="v">CATIA V5, SolidWorks, FreeCAD, CadQuery</span>
+        </li>
+        <li>
+          <span class="k">Programming &amp; Tools</span>
+          <span class="v">Python, Linux, ANSYS Mechanical, Microsoft Excel</span>
+        </li>
+        <li>
+          <span class="k">Aircraft Design</span>
+          <span class="v">Conceptual mass estimation, centre-of-gravity and balance analysis</span>
+        </li>
       </ul>
     </div>
-    <div>
-      <h2>Platforms &amp; certifications</h2>
-      <div class="chip-row">
-        <span class="chip">Beechcraft King Air 300</span>
-        <span class="chip">Hughes 369H</span>
-        <span class="chip">Dornier Do 228</span>
-        <span class="chip">Bell UH-1 Iroquois</span>
-        <span class="chip">Super Mushshak</span>
-        <span class="chip">Diamond DA series</span>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Professional History</span>
+          <h2>Experience</h2>
+        </div>
       </div>
-      <p style="margin-top: 24px; max-width: 100%;">Rolls-Royce Aerospace Engineering Program &middot;
-        Dwello Aerospace CAD Internship &middot; Aerospace Work Experience Program &middot;
-        Time Management Certification</p>
-    </div>
-  </div>
-</section>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>Joseph Komgbenda &mdash; Aerospace Engineer, Abuja, Nigeria</p>
-    <div class="footer-links">
-      <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
-      <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </div>
-</footer>
+      <div style="display: grid; gap: 20px;">
+        <div class="glass-panel liquid-glass">
+          <div class="proj-meta">
+            <span class="proj-tag">November 2026 &middot; Contract</span>
+            <span class="mono" style="font-size: 0.78rem; color: var(--muted);">Turing (Remote)</span>
+          </div>
+          <h3>Aerospace Subject-Matter Expert, AI Model Evaluation</h3>
+          <ul style="margin: 10px 0 0; padding-left: 18px; color: var(--muted);">
+            <li>Authored aerospace design tasks used to evaluate and post-train frontier AI models, each with an engineering brief, data handbook, buildable reference design, and reproducible open-source simulation.</li>
+            <li>Built a tailless UAV flying-wing design task, with the reference design analysed in <b>AVL</b> using section polar data and delivered as <b>STEP AP242</b> geometry.</li>
+            <li>Developed a propeller and motor matching task across multiple operating points, solved with blade element momentum (BEM) analysis.</li>
+            <li>Reviewed model attempts to separate genuine engineering-reasoning errors from defects in the task itself.</li>
+          </ul>
+        </div>
 
+        <div class="glass-panel liquid-glass">
+          <div class="proj-meta">
+            <span class="proj-tag">June 2025 – August 2025 &middot; Remote</span>
+            <span class="mono" style="font-size: 0.78rem; color: var(--muted);">Dwello Aerospace</span>
+          </div>
+          <h3>Remote CAD Engineering Intern</h3>
+          <ul style="margin: 10px 0 0; padding-left: 18px; color: var(--muted);">
+            <li>Built detailed <b>CATIA V5</b> models of the <b>GE90</b> and <b>Eurojet EJ200</b> turbofan engines from engineering drawings and reference material.</li>
+          </ul>
+        </div>
+
+        <div class="glass-panel liquid-glass">
+          <div class="proj-meta">
+            <span class="proj-tag">Aug–Oct 2024 &amp; Apr–Sep 2025 &middot; Nine Months</span>
+            <span class="mono" style="font-size: 0.78rem; color: var(--muted);">Nigerian Air Force (307 EAG &amp; 431 Engineering Group)</span>
+          </div>
+          <h3>Aircraft Maintenance</h3>
+          <ul style="margin: 10px 0 0; padding-left: 18px; color: var(--muted);">
+            <li>Nine months of maintenance work across six platforms (King Air 300, Hughes 369H, Do 228, Bell UH-1, Super Mushshak, Diamond DA), including scheduled inspections, maintenance records, and engineering documentation.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap two-col">
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">Education</span>
+        <h2>BEng Aerospace Engineering</h2>
+        <p style="color: var(--ink); font-weight: 600; margin-bottom: 6px;">
+          Air Force Institute of Technology (AFIT), Kaduna, Nigeria &middot; Graduated July 2026
+        </p>
+        <p>
+          <b>Coursework:</b> Aerodynamics, Aircraft Structures, Aircraft Design, Aircraft Propulsion,
+          Flight Mechanics, Engineering Materials.
+        </p>
+        <p style="margin-bottom:0;">
+          <b>Certifications:</b> Rolls-Royce Aerospace Engineering Program; Aerospace Work Experience Program.
+        </p>
+      </div>
+
+      <div class="glass-panel liquid-glass">
+        <span class="sec-tag">Maintained Aircraft Platforms</span>
+        <h2>Fixed- &amp; Rotary-Wing Fleet</h2>
+        <div class="chip-row" style="margin-top: 12px;">
+          <span class="glass-chip">Beechcraft King Air 300</span>
+          <span class="glass-chip">Hughes 369H</span>
+          <span class="glass-chip">Dornier Do 228</span>
+          <span class="glass-chip">Bell UH-1</span>
+          <span class="glass-chip">Super Mushshak</span>
+          <span class="glass-chip">Diamond DA Series</span>
+        </div>
+        <div style="margin-top: 24px;">
+          <a class="liquid-btn sm" href="project-atr72.html">Read ATR 72-600 CFD Thesis ↗</a>
+          <a class="liquid-btn sm" href="project-carter260.html" style="margin-left: 8px;">Carter Fusion 260 ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>

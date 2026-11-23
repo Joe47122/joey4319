@@ -3,184 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Joseph Komgbenda— Aerospace Engineer</title>
-<meta name="description" content="Aerospace engineering portfolio: CFD thesis on ATR 72-600 propeller slipstream aerodynamics, CAD engineering, and aircraft maintenance experience.">
+<title>Komgbenda Joseph Oryiman — Aerospace Engineer | CFD, CAD &amp; AI Model Evaluation</title>
+<meta name="description" content="Aerospace engineering portfolio of Komgbenda Joseph Oryiman: ATR 72-600 propeller slipstream CFD, AVL/XFOIL/BEM low-order aerodynamics, CATIA V5 turbofan modeling, and AI model evaluation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="wordmark" href="index.html">Joseph Komgbenda</a>
-    <nav class="site-nav">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="cad-portfolio.html">CAD Portfolio</a>
-      <a href="resume.html">Resume</a>
+<canvas id="airflow-canvas"></canvas>
+
+<div class="page-content">
+  <div class="nav-shell">
+    <nav class="top-pill liquid-glass">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        Joseph Komgbenda
+      </a>
+      <div class="nav-tabs">
+        <a class="nav-tab active" href="index.html" aria-current="page">Home</a>
+        <a class="nav-tab" href="projects.html">Projects</a>
+        <a class="nav-tab" href="cad-portfolio.html">CAD Portfolio</a>
+        <a class="nav-tab" href="resume.html">Resume</a>
+      </div>
+      <a class="liquid-btn primary sm" href="#contact">Let’s Talk ↗</a>
     </nav>
   </div>
-</header>
 
-<section class="hero">
-  <div class="container">
-    <div class="hero-panel">
-      <div>
-        <div class="kicker">Hey, I&rsquo;m Joe</div>
-        <h1>I engineer <span class="accent-text">aircrafts</span> and simulate how they fly</h1>
-        <p class="role">Aerospace Engineering graduate, AFIT Kaduna &mdash; CFD, CAD modeling, and
-          aircraft maintenance experience across six platforms.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="mailto:komgbendajoseph6@gmail.com">Get in touch</a>
-          <a class="btn btn-secondary" href="project-atr72.html">Read the thesis breakdown</a>
+  <header class="hero" id="home">
+    <div class="wrap">
+      <div class="hero-kicker liquid-glass">
+        <span class="pulse-dot"></span>
+        <span><b>Aerospace Engineer</b> · CFD, Aerodynamic Analysis &amp; AI Model Evaluation</span>
+      </div>
+      <h1 class="hero-banner-name">JOSEPH KOMGBENDA</h1>
+
+      <div class="hero-stage">
+        <div class="hero-left">
+          <p>
+            Specialising in applied aerodynamics, <b>ANSYS Fluent</b> propeller slipstream CFD,
+            low-order design methods (<b>AVL, XFOIL, NeuralFoil, BEM</b>), and building aerospace
+            engineering evaluation tasks for frontier AI models at <b>Turing</b>.
+          </p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="liquid-btn primary" href="projects.html">Explore Projects ↓</a>
+            <a class="liquid-btn" href="resume.html">View Resume</a>
+          </div>
+        </div>
+
+        <div class="portrait-card liquid-glass">
+          <img src="assets/joe-photo.jpg" alt="Komgbenda Joseph Oryiman">
+          <div class="floating-badge liquid-glass">
+            <b>BEng Aerospace (Jul 2026)</b><br>
+            AFIT Kaduna · Abuja (Remote)
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <a class="spec-pill-card liquid-glass" href="resume.html">
+            <div class="eyebrow">
+              <span>Current Role · Nov 2026</span>
+              <span class="telemetry-hint">AVL · BEM · STEP AP242</span>
+            </div>
+            <h3>Aerospace SME — Turing</h3>
+            <p>Authoring AVL flying-wing &amp; BEM propeller tasks to evaluate frontier AI models.</p>
+          </a>
+          <a class="spec-pill-card liquid-glass" href="project-atr72.html">
+            <div class="eyebrow">
+              <span>Flagship Research · 2026</span>
+              <span class="telemetry-hint">115–116 KCAS · RANS</span>
+            </div>
+            <h3>ATR 72-600 OEI Slipstream CFD</h3>
+            <p>ADMv2 + k-&omega; SST on a 616k poly-hexcore mesh, verified via 3-level GCI.</p>
+          </a>
         </div>
       </div>
-      <div class="hero-photo-wrap">
-        <img src="assets/joe-photo.jpg" alt="Komgbenda Joseph Oryiman">
-      </div>
     </div>
+  </header>
 
-    <div class="stat-strip">
-      <div class="stat">
-        <span class="value">~3 hrs</span>
-        <span class="label">CPU time to converge the full-aircraft ADM simulation, vs. 170&ndash;3,100 CPU hours in published benchmarks</span>
-      </div>
-      <div class="stat">
-        <span class="value">&minus;6,752 Pa</span>
-        <span class="label">Peak wing-root suction at the operative nacelle junction under OEI</span>
-      </div>
-      <div class="stat">
-        <span class="value">6</span>
-        <span class="label">Aircraft platforms maintained: King Air 300, Hughes 369H, Do 228, Super Mushshak &amp; more</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section section-tight">
-  <div class="container">
-    <div class="section-label">My Skills</div>
-    <h2>My Expertise</h2>
-    <div class="expertise-grid">
-      <div class="expertise-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 14h15a3 3 0 1 1-3 3"/><path d="M3 20h9"/></svg>
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">~3<span>CPU hrs</span></div>
+          <span class="telemetry-hint">vs. 170–3,100h</span>
         </div>
-        <h3>CFD &amp; Aerodynamics</h3>
-        <p>ANSYS Fluent, the ADMv2 actuator disk method, and k&minus;&omega; SST turbulence modeling.</p>
+        <div class="stat-lbl">Convergence on 616,523-cell poly-hexcore mesh vs. full-blade benchmarks</div>
       </div>
-      <div class="expertise-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/></svg>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">&minus;6,752<span>Pa</span></div>
+          <span class="telemetry-hint">TKE 35.9 m&sup2;/s&sup2;</span>
         </div>
-        <h3>CAD Modeling</h3>
-        <p>CATIA V5 part and assembly modeling for turbofan engines and full airframes.</p>
+        <div class="stat-lbl">Suction peak at operative wing-nacelle junction under OEI climb (115 KCAS)</div>
       </div>
-      <div class="expertise-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 20V10l7-6 7 6v10"/><path d="M9 20v-6h6v6"/></svg>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">3-Level<span>GCI</span></div>
+          <span class="telemetry-hint">AoA 6&deg; &amp; 10&deg;</span>
         </div>
-        <h3>Structural Analysis</h3>
-        <p>One-way FSI, ANSYS Mechanical, mass &amp; balance and load-path analysis.</p>
+        <div class="stat-lbl">Grid-independence verification across take-off (116 KCAS) &amp; OEI climb</div>
       </div>
-      <div class="expertise-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"/></svg>
+      <div class="stat-card liquid-glass">
+        <div class="stat-top">
+          <div class="stat-val">6<span>Platforms</span></div>
+          <span class="telemetry-hint">307 EAG · 431 EG</span>
         </div>
-        <h3>Aircraft Maintenance</h3>
-        <p>Scheduled inspections and servicing across six fixed- and rotary-wing platforms.</p>
+        <div class="stat-lbl">King Air 300, Hughes 369H, Do 228, Bell UH-1, Super Mushshak &amp; Diamond DA</div>
       </div>
     </div>
   </div>
-</section>
 
-<section class="spec-block">
-  <div class="container block-grid">
-    <div class="block-label">Final Year<br>Thesis</div>
-    <div class="block-body">
-      <h2>Full-aircraft CFD under one-engine-inoperative loading</h2>
-      <p class="lede">The thesis applies the Actuator Disk Method (ADMv2) to a complete ATR 72-600
-        wing-fuselage-nacelle-empennage geometry in ANSYS Fluent, coupled by one-way FSI to
-        ANSYS Mechanical, to extract the asymmetric structural loads an OEI event puts through
-        the airframe &mdash; at a computational cost that a university engineering department can
-        actually afford.</p>
-      <ul class="result-list">
-        <li><span class="k">Method</span><span class="v">ADMv2 actuator disk, k&minus;&omega; SST turbulence closure, poly-hexcore mesh (616,523 elements)</span></li>
-        <li><span class="k">Governing case</span><span class="v">One-engine-inoperative climb vs. symmetric take-off, full wing-fuselage-nacelle-empennage geometry</span></li>
-        <li><span class="k">Headline result</span><span class="v">&minus;6,752 Pa suction peak and 35.9 m&sup2;/s&sup2; TKE at the operative wing-nacelle junction</span></li>
-        <li><span class="k">Efficiency</span><span class="v">~3 CPU hours vs. 170 (Yang et al., 2024) to 3,100 (Zhao et al., 2022) CPU hours in prior work</span></li>
-        <li><span class="k">Supervision</span><span class="v">Co-authored manuscript in preparation with Sqn Ldr S.O. Sanusi</span></li>
-      </ul>
-      <p style="margin-top: 24px;"><a href="project-atr72.html">Full breakdown of the methodology and results &rarr;</a></p>
-    </div>
-  </div>
-</section>
-
-<section class="spec-block">
-  <div class="container block-grid">
-    <div class="block-label">CAD<br>Engineering</div>
-    <div class="block-body">
-      <h2>Turbofan modeling at Dwello Aerospace</h2>
-      <p class="lede">Remote CAD internship building detailed CATIA V5 models of the GE90 and
-        Eurojet EJ200 turbofan engines from engineering drawings and reference material, then
-        presenting completed assemblies during technical review.</p>
-      <div class="chip-row">
-        <span class="chip">CATIA V5</span>
-        <span class="chip">Part &amp; assembly modeling</span>
-        <span class="chip">GE90 turbofan</span>
-        <span class="chip">Eurojet EJ200</span>
+  <section class="sec" id="projects">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Portfolio Showcase</span>
+          <h2>Featured Engineering Projects</h2>
+        </div>
+        <div class="filter-bar liquid-glass" role="tablist">
+          <button class="filter-pill active" data-filter="all">All Work</button>
+          <button class="filter-pill" data-filter="cfd">CFD &amp; Aero</button>
+          <button class="filter-pill" data-filter="cad">Propulsion CAD</button>
+          <button class="filter-pill" data-filter="design">Aircraft Design</button>
+        </div>
       </div>
-      <p style="margin-top: 24px;"><a href="cad-portfolio.html">See the GE90 model &rarr;</a></p>
-    </div>
-  </div>
-</section>
 
-<section class="spec-block">
-  <div class="container block-grid">
-    <div class="block-label">Maintenance<br>Experience</div>
-    <div class="block-body">
-      <h2>Nine months on the line with the Nigerian Air Force</h2>
-      <p class="lede">Scheduled 400-hour and 600-hour inspections on Beechcraft King Air 300
-        aircraft through at least two full maintenance cycles, 200-hour checks on Hughes 369H
-        helicopters, borescope engine inspections, and landing gear, hydraulic and fuel system
-        servicing &mdash; across two Nigerian Air Force engineering groups.</p>
-      <div class="chip-row">
-        <span class="chip">King Air 300</span>
-        <span class="chip">Hughes 369H</span>
-        <span class="chip">Dornier Do 228</span>
-        <span class="chip">Super Mushshak</span>
-        <span class="chip">Diamond DA series</span>
+      <div class="proj-grid">
+        <article class="proj-card wide liquid-glass" data-cat="cfd">
+          <div class="proj-thumb">
+            <img src="assets/atr-model ansys.png" alt="ATR 72-600 CATIA V5 and ANSYS Fluent model">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Final-Year Thesis · AFIT Kaduna (2026)</span>
+              <a class="liquid-btn sm" href="project-atr72.html">Read Case Study ↗</a>
+            </div>
+            <h3>Asymmetric Aerodynamic Structural Analysis of ATR 72-600 Using the Actuator Method</h3>
+            <p>
+              Modelled the complete ATR 72-600 (wing, fuselage, nacelles, empennage) in CATIA V5 and simulated it in ANSYS Fluent
+              with ADMv2 and k-&omega; SST for aerodynamic load extraction across take-off (116 KCAS, 10&deg; AoA) and OEI climb
+              (115 KCAS, 6&deg; AoA), backed by a three-level Grid Convergence Index study. First author of a journal manuscript in preparation.
+            </p>
+            <div class="chip-list">
+              <span class="glass-chip">ANSYS Fluent</span>
+              <span class="glass-chip">ADMv2 + BEM</span>
+              <span class="glass-chip">k-&omega; SST</span>
+              <span class="glass-chip">616,523 Poly-Hexcore Cells</span>
+              <span class="glass-chip">3-Level GCI</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cad">
+          <div class="proj-thumb">
+            <img src="assets/ge90-iso.jpg" alt="GE90 Turbofan CATIA V5">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Dwello Aerospace · CAD</span>
+              <a class="liquid-btn sm" href="cad-portfolio.html">Inspect Gallery ↗</a>
+            </div>
+            <h3>GE90 High-Bypass Turbofan Assembly</h3>
+            <p>Detailed multi-stage fan, spinner, nacelle, and core assembly modelled in CATIA V5 from engineering drawings and reference material.</p>
+            <div class="chip-list">
+              <span class="glass-chip">CATIA V5</span>
+              <span class="glass-chip">Turbofan Assembly</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cad">
+          <div class="proj-thumb">
+            <img src="assets/ej200-cutaway.jpg" alt="Eurojet EJ200 Cutaway">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Dwello Aerospace · CAD</span>
+              <a class="liquid-btn sm" href="cad-portfolio.html#ej200">Inspect Gallery ↗</a>
+            </div>
+            <h3>Eurojet EJ200 Military Turbofan</h3>
+            <p>Full cutaway, convergent-divergent nozzle actuator linkages, and compressor stages modelled in CATIA V5.</p>
+            <div class="chip-list">
+              <span class="glass-chip">CATIA V5</span>
+              <span class="glass-chip">Nozzle Kinematics</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="design">
+          <div class="proj-thumb">
+            <img src="assets/carter260-iso.jpg" alt="Carter Fusion 260 Business Jet">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Group Leader (9 Members) · Nov 2025</span>
+              <a class="liquid-btn sm" href="project-carter260.html">Read Case Study ↗</a>
+            </div>
+            <h3>Carter Fusion 260 Business Jet Concept</h3>
+            <p>16-passenger ultra-long-range concept (MTOW 27,295 kg, range 7,860 km). Personally owned component-level mass estimation &amp; CG balance across four loading cases (0.236–0.293 MAC).</p>
+            <div class="chip-list">
+              <span class="glass-chip">Mass &amp; Balance</span>
+              <span class="glass-chip">0.236–0.293 MAC</span>
+              <span class="glass-chip">CATIA V5</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="proj-card liquid-glass" data-cat="cfd">
+          <div class="proj-thumb">
+            <img src="assets/bike brace.jpg" alt="Parametric FreeCAD and Mechanical Assemblies">
+          </div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <span class="proj-tag">Turing + Parametric CAD</span>
+              <a class="liquid-btn sm" href="cad-portfolio.html#side-quests">View Models ↗</a>
+            </div>
+            <h3>Tailless UAV AVL Design &amp; Parametric Mechanical Assemblies</h3>
+            <p>STEP AP242 flying-wing reference designs analysed in AVL with section polars, plus spreadsheet-driven FreeCAD assemblies (two-bore split clamp &amp; flat pedal).</p>
+            <div class="chip-list">
+              <span class="glass-chip">AVL &amp; BEM</span>
+              <span class="glass-chip">XFOIL / NeuralFoil</span>
+              <span class="glass-chip">FreeCAD / STEP AP242</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="experience">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Career &amp; Service</span>
+          <h2>Experience &amp; Technical Track</h2>
+        </div>
+      </div>
+
+      <div class="exp-layout">
+        <div class="exp-tab-list" role="tablist">
+          <button class="exp-tab-btn liquid-glass active" data-exp="turing">
+            <span class="when">Nov 2026 · Contract</span>
+            <strong>Turing — Aerospace SME</strong>
+          </button>
+          <button class="exp-tab-btn liquid-glass" data-exp="dwello">
+            <span class="when">Jun 2025 – Aug 2025 · Remote</span>
+            <strong>Dwello Aerospace — CAD Intern</strong>
+          </button>
+          <button class="exp-tab-btn liquid-glass" data-exp="naf">
+            <span class="when">Aug 2024 – Oct 2024 &amp; Apr 2025 – Sep 2025</span>
+            <strong>Nigerian Air Force — Maintenance</strong>
+          </button>
+        </div>
+
+        <div>
+          <div class="exp-panel liquid-glass active" id="exp-turing">
+            <div class="org">Turing · AI Model Evaluation (Remote) · November 2026</div>
+            <h3>Aerospace Subject-Matter Expert (Contract)</h3>
+            <ul>
+              <li>Authored aerospace design tasks used to evaluate and post-train frontier AI models, each with an engineering brief, data handbook, buildable reference design, and reproducible open-source simulation.</li>
+              <li>Built a tailless UAV flying-wing design task, with the reference design analysed in <b>AVL</b> using section polar data and delivered as <b>STEP AP242</b> geometry.</li>
+              <li>Developed a propeller and motor matching task across multiple operating points, solved with blade element momentum (BEM) analysis.</li>
+              <li>Reviewed model attempts to separate genuine engineering-reasoning errors from defects in the task itself.</li>
+            </ul>
+          </div>
+
+          <div class="exp-panel liquid-glass" id="exp-dwello">
+            <div class="org">Dwello Aerospace · June 2025 – August 2025</div>
+            <h3>Remote CAD Engineering Intern</h3>
+            <ul>
+              <li>Built detailed <b>CATIA V5</b> models of the <b>GE90</b> and <b>Eurojet EJ200</b> turbofan engines from engineering drawings and reference material.</li>
+              <li>Delivered multi-view assemblies and fan/core cutaway visualisations for technical design reviews.</li>
+            </ul>
+          </div>
+
+          <div class="exp-panel liquid-glass" id="exp-naf">
+            <div class="org">Nigerian Air Force · 307 Executive Airlift Group (Apr–Sep 2025) &amp; 431 Engineering Group (Aug–Oct 2024)</div>
+            <h3>Aircraft Maintenance (Nine Months Total)</h3>
+            <ul>
+              <li>Nine months of maintenance work across <b>six platforms</b>: King Air 300, Hughes 369H, Do 228, Bell UH-1, Super Mushshak, and Diamond DA.</li>
+              <li>Executed scheduled inspections, maintenance records, and engineering documentation across both NAF commands.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="process">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="sec-tag">Full Analysis Chain</span>
+          <h2>How I Approach Engineering Problems</h2>
+        </div>
+      </div>
+      <div class="process-grid">
+        <div class="process-card liquid-glass">
+          <div class="process-num">01</div>
+          <h3>CAD &amp; Low-Order Sizing</h3>
+          <p>Parametric geometry in CATIA V5, SolidWorks, FreeCAD, or CadQuery paired with rapid aerodynamic sizing in AVL, XFOIL, NeuralFoil, and BEM.</p>
+        </div>
+        <div class="process-card liquid-glass">
+          <div class="process-num">02</div>
+          <h3>Meshing &amp; Verification</h3>
+          <p>Clean fluid domains in SpaceClaim and poly-hexcore meshing in Fluent Meshing, verified with three-level Grid Convergence Index (GCI) studies.</p>
+        </div>
+        <div class="process-card liquid-glass">
+          <div class="process-num">03</div>
+          <h3>RANS CFD &amp; Post-Processing</h3>
+          <p>Steady RANS with k-&omega; SST and actuator-disk propulsion modelling in ANSYS Fluent, checking every convergence diagnostic before reporting loads.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap" id="contact">
+    <div class="cta-box liquid-glass">
+      <span class="sec-tag">Ready to Collaborate</span>
+      <h2>Let’s Build &amp; Verify What Flies</h2>
+      <p>Available for full-time aerospace engineering roles, CFD/CAD consulting, and AI engineering evaluation projects.</p>
+      <div class="cta-actions">
+        <a class="liquid-btn primary" href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com ↗</a>
+        <a class="liquid-btn" href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="liquid-btn" href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+        <a class="liquid-btn" href="tel:+2347017522777">+234 701 752 2777</a>
       </div>
     </div>
   </div>
-</section>
 
-<section class="spec-block" style="border-bottom: none;">
-  <div class="container block-grid">
-    <div class="block-label">Also<br>Working On</div>
-    <div class="block-body">
-      <h2>Carter Fusion 260 business aircraft concept</h2>
-      <p class="lede">A nine-person team project I led, synthesizing the Bombardier Challenger 650
-        and Gulfstream G280 into a higher-capacity, ultra-long-range business jet &mdash; MTOW
-        27,295 kg, range 7,860 km, 20 occupants. My technical contribution: the mass estimation
-        and center-of-gravity balance analysis behind those numbers.</p>
-      <p style="margin-top: 24px;"><a href="project-carter260.html">See the CAD model &amp; team &rarr;</a></p>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Komgbenda Joseph Oryiman &mdash; Aerospace Engineer · Abuja, Nigeria (Remote)</p>
+      <div class="footer-links">
+        <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
+        <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
+      </div>
     </div>
-  </div>
-</section>
+  </footer>
+</div>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>Joseph Komgbenda &mdash; Aerospace Engineer, Abuja, Nigeria</p>
-    <div class="footer-links">
-      <a href="mailto:komgbendajoseph6@gmail.com">komgbendajoseph6@gmail.com</a>
-      <a href="https://www.linkedin.com/in/joseph-komgbenda-38bb41287/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/Joe47122" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </div>
-</footer>
-
+<script src="app.js"></script>
 </body>
 </html>
