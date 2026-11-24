@@ -101,5 +101,6 @@ Within 30–60 seconds of pushing to `main`, GitHub Pages rebuilds and publishes
 
 **Komgbenda Joseph Oryiman**  
 B.Eng. Aerospace Engineering — Air Force Institute of Technology (AFIT)  
-- **Email:** [komgbendajoseph@gmail.com](mailto:komgbendajoseph@gmail.com)  
+- **Email:** [komgbendajoseph6@gmail.com](mailto:komgbendajoseph6@gmail.com)  
+- **WhatsApp:** [+234 701 752 2777](https://wa.me/2347017522777)  
 - **LinkedIn:** [linkedin.com/in/joseph-komgbenda-38bb41287](https://www.linkedin.com/in/joseph-komgbenda-38bb41287/)
