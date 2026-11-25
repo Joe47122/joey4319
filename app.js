@@ -398,23 +398,24 @@
       ctx.lineWidth = 1.1;
       ctx.stroke();
 
-      // Spinning main rotor disc + 4 blades
+      // Spinning main rotor disc + 4 blades (smoothly spools down when parked on the helipad)
+      const rSpeed = typeof drone.rotorSpeed === 'number' ? drone.rotorSpeed : 1;
+      drone.rotorAngle = (drone.rotorAngle || 0) + 0.38 * rSpeed;
       ctx.beginPath();
       ctx.arc(1.2, 0, 10.5, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(104, 182, 148, 0.24)';
+      ctx.strokeStyle = `rgba(104, 182, 148, ${(0.12 + 0.16 * rSpeed).toFixed(3)})`;
       ctx.lineWidth = 0.8;
       ctx.stroke();
 
-      const rAng = t * 0.38;
       ctx.save();
       ctx.translate(1.2, 0);
-      ctx.rotate(rAng);
+      ctx.rotate(drone.rotorAngle);
       ctx.beginPath();
       ctx.moveTo(-10.2, 0);
       ctx.lineTo(10.2, 0);
       ctx.moveTo(0, -10.2);
       ctx.lineTo(0, 10.2);
-      ctx.strokeStyle = 'rgba(238, 242, 248, 0.72)';
+      ctx.strokeStyle = 'rgba(238, 242, 248, 0.78)';
       ctx.lineWidth = 1.15;
       ctx.stroke();
       ctx.restore();
@@ -613,6 +614,85 @@
     ctx.restore();
   }
 
+  function drawHelipad(ctx, px, py, alpha, isLanded, touchdownPulse, t) {
+    if (alpha <= 0.01) return;
+    ctx.save();
+    ctx.translate(px, py);
+
+    // Expanding rotor downwash / touchdown ring pulse
+    if (touchdownPulse > 0.01) {
+      const r = 16 + (1 - touchdownPulse) * 22;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(104, 182, 148, ${(touchdownPulse * 0.55 * alpha).toFixed(3)})`;
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+    }
+
+    // Subtle continuous rotor-wash ring while hovering/approaching
+    if (!isLanded) {
+      const washPhase = (t * 0.04) % 1;
+      const washR = 14 + washPhase * 12;
+      ctx.beginPath();
+      ctx.arc(0, 0, washR, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(160, 210, 245, ${((1 - washPhase) * 0.28 * alpha).toFixed(3)})`;
+      ctx.lineWidth = 0.85;
+      ctx.stroke();
+    }
+
+    // Outer circular helipad deck plate
+    ctx.beginPath();
+    ctx.arc(0, 0, 19.5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(10, 16, 25, ${(alpha * 0.86).toFixed(3)})`;
+    ctx.fill();
+    ctx.strokeStyle = isLanded
+      ? `rgba(52, 211, 153, ${(alpha * 0.82).toFixed(3)})`
+      : `rgba(160, 190, 225, ${(alpha * 0.65).toFixed(3)})`;
+    ctx.lineWidth = 1.25;
+    ctx.stroke();
+
+    // Inner dashed aviation aiming circle
+    ctx.save();
+    ctx.setLineDash([3.2, 2.6]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 13.8, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(226, 236, 248, ${(alpha * 0.52).toFixed(3)})`;
+    ctx.lineWidth = 0.95;
+    ctx.stroke();
+    ctx.restore();
+
+    // Crisp centered Helipad "H" marking
+    ctx.beginPath();
+    // Left vertical bar of H
+    ctx.moveTo(-4.6, -6.2);
+    ctx.lineTo(-4.6, 6.2);
+    // Right vertical bar of H
+    ctx.moveTo(4.6, -6.2);
+    ctx.lineTo(4.6, 6.2);
+    // Horizontal crossbar of H
+    ctx.moveTo(-4.6, 0);
+    ctx.lineTo(4.6, 0);
+    ctx.strokeStyle = `rgba(241, 245, 249, ${(alpha * 0.82).toFixed(3)})`;
+    ctx.lineWidth = 2.1;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // 8 Perimeter inset heliport beacon lights (amber on approach, emerald green when landed)
+    for (let i = 0; i < 8; i++) {
+      const ang = (i * Math.PI) / 4;
+      const lx = Math.cos(ang) * 17.2;
+      const ly = Math.sin(ang) * 17.2;
+      ctx.beginPath();
+      ctx.arc(lx, ly, 1.15, 0, Math.PI * 2);
+      ctx.fillStyle = isLanded
+        ? `rgba(52, 211, 153, ${(alpha * 0.95).toFixed(3)})`
+        : `rgba(251, 191, 36, ${(alpha * (0.55 + 0.35 * Math.sin(t * 0.15 + i))).toFixed(3)})`;
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
   let t = 0;
   function animate() {
     t += 1;
@@ -739,9 +819,59 @@
           drone.trail.push({ x: tailX, y: tailY, lx: tailX, ly: tailY, rx: tailX, ry: tailY });
           if (drone.trail.length > 22) drone.trail.shift();
         }
+      } else if (currentCraft.id === 'heli' && isPointerIdle) {
+        // Helicopter Helipad approach, flare, touchdown, and rotor spool-down choreography
+        if (drone.mode === 'cruise') {
+          drone.mode = 'heli_approach';
+          drone.padX = Math.max(50, Math.min(W - 50, pointer.x));
+          drone.padY = Math.max(75, Math.min(H - 50, pointer.y + 18));
+        }
+
+        drone.padAlpha = Math.min(1, drone.padAlpha + 0.065);
+
+        // Align the helicopter's main rotor hub (+1.2 offset along fuselage) directly over the Helipad "H" center
+        const targetX = drone.padX - Math.cos(drone.angle) * 1.2;
+        const targetY = drone.padY - Math.sin(drone.angle) * 1.2;
+        const dx = targetX - drone.x;
+        const dy = targetY - drone.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (drone.mode === 'heli_approach') {
+          drone.x += dx * 0.085;
+          drone.y += dy * 0.085;
+          drone.rotorSpeed = 1;
+
+          // Smoothly flare and align heading toward level horizontal (0 rad) over the "H" marking
+          const desiredAng = dist > 18 ? Math.atan2(dy, dx) : 0;
+          let aDiff = desiredAng - drone.angle;
+          while (aDiff > Math.PI) aDiff -= Math.PI * 2;
+          while (aDiff < -Math.PI) aDiff += Math.PI * 2;
+          drone.angle += aDiff * 0.12;
+          drone.bank *= 0.86;
+
+          if (drone.trail.length > 0 && t % 2 === 0) drone.trail.shift();
+
+          if (dist < 1.4 && Math.abs(drone.angle) < 0.08) {
+            drone.angle = 0;
+            drone.x = drone.padX - 1.2;
+            drone.y = drone.padY;
+            drone.touchdownPulse = 1;
+            drone.mode = 'heli_landed';
+          }
+        } else if (drone.mode === 'heli_landed') {
+          drone.angle = 0;
+          drone.x = drone.padX - 1.2;
+          drone.y = drone.padY;
+          drone.bank = 0;
+          // Spool main 4-blade rotor down to a gentle ground-idle rotation
+          drone.rotorSpeed = Math.max(0.07, (drone.rotorSpeed || 1) * 0.965);
+          drone.touchdownPulse = Math.max(0, drone.touchdownPulse - 0.025);
+          if (drone.trail.length > 0) drone.trail.shift();
+        }
       } else {
         // Normal active flight chasing cursor across streamlines
         drone.mode = 'cruise';
+        drone.rotorSpeed = Math.min(1, (drone.rotorSpeed || 0.2) + 0.08);
         drone.chopstickClose = Math.max(0, drone.chopstickClose - 0.08);
         drone.gridFinDeploy = Math.max(0, drone.gridFinDeploy - 0.06);
         drone.thrustPower = 1;
@@ -876,6 +1006,8 @@
 
       if (currentCraft.id === 'rocket' && drone.padAlpha > 0.01) {
         drawRocketHoldingPod(ctx, drone.padX, drone.padY, drone.padAlpha, drone.chopstickClose, drone.touchdownPulse);
+      } else if (currentCraft.id === 'heli' && drone.padAlpha > 0.01) {
+        drawHelipad(ctx, drone.padX, drone.padY, drone.padAlpha, drone.mode === 'heli_landed', drone.touchdownPulse, t);
       }
 
       ctx.save();
